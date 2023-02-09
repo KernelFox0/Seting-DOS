@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <!--<RuntimeIdentifier>cosmos</RuntimeIdentifier>-->
+        <Platform>cosmos</Platform>
+        <SupportsX86Intrinsics>false</SupportsX86Intrinsics>
+        <SelfContained>True</SelfContained>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EnableGDB>False</EnableGDB>
+        <StartCosmosGDB>False</StartCosmosGDB>
+        <VisualStudioDebugPort>Pipe: Cosmos\Serial</VisualStudioDebugPort>
+        <CosmosDebugPort>Serial: COM1</CosmosDebugPort>
+        <Launch>VMware</Launch>
+        <Profile>VMware</Profile>
+        <Description>Use VMware Player or Workstation to deploy and debug.</Description>
+        <PxeInterface>192.168.0.8</PxeInterface>
+        <DebugEnabled>False</DebugEnabled>
+        <VMWareEdition>Workstation</VMWareEdition>
+        <AssemblyName>SetingDOS</AssemblyName>
+        <RootNamespace>Seting_DOS</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="framework\**" />
+      <EmbeddedResource Remove="framework\**" />
+      <None Remove="framework\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Files\dotNetTest.dll" />
+      <None Remove="Files\errorSound.beep" />
+      <None Remove="Files\mscorlib.dll" />
+      <None Remove="Files\questionSound.beep" />
+      <None Remove="Files\shutdownSound.beep" />
+      <None Remove="Files\startSound.beep" />
+      <None Remove="Files\warnSound.beep" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Files\dotNetTest.dll" />
+      <EmbeddedResource Include="Files\errorSound.beep" />
+      <EmbeddedResource Include="Files\mscorlib.dll" />
+      <EmbeddedResource Include="Files\questionSound.beep" />
+      <EmbeddedResource Include="Files\shutdownSound.beep" />
+      <EmbeddedResource Include="Files\startSound.beep" />
+      <EmbeddedResource Include="Files\warnSound.beep" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Cosmos.Build" Version="0-*" NoWarn="NU1604" />
+        <PackageReference Include="Cosmos.Debug.Kernel" Version="0-*" NoWarn="NU1604" />
+        <PackageReference Include="Cosmos.System2" Version="0-*" NoWarn="NU1604" />
+        <PackageReference Include="DotNetParser" Version="0.5.9" />
+    </ItemGroup>
+
+</Project>
