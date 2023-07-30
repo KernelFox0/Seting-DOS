@@ -1,5 +1,5 @@
 ﻿/// 
-/// Set TextUI background color based on the user preference, Last modified: 2023. 07. 30.
+/// Seting-DOS File type name reference file, Last modified: 2023. 07. 30.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -13,16 +13,26 @@
 /// You should have received a copy of the GNU General Public License along with Seting-DOS. If not, see <https://www.gnu.org/licenses/>.
 /// 
 
-using System;
-
 namespace Seting_DOS.Services
 {
-    public static class TUIBGCol
-    {
-        public static void Set()
-        {
-            if (EnvVars.theme == "classic") { Console.BackgroundColor = ConsoleColor.Blue; }
-            else { Console.BackgroundColor = ConsoleColor.Black; }
-        }
-    }
+	public static class FileTypes
+	{
+		public static string GiveTypeOwO(string extension)
+		{
+			if (!extension.StartsWith(".")) { extension = "." + extension; }
+			string returnVal = "";
+			switch (extension)
+			{
+				default: returnVal = "Unknown"; break;
+				case ".txt": returnVal = "Text"; break;
+				case ".beep": returnVal = "Beep Music"; break;
+				case ".pref": returnVal = "Preference"; break;
+				case ".dat": returnVal = "Data"; break;
+				case ".pwd": returnVal = "Password"; break;
+				case ".idp": returnVal = "Install Type Data"; break;
+				case ".mze": returnVal = "Maze Game Level"; break;
+			}
+			return returnVal + " File";
+		}
+	}
 }

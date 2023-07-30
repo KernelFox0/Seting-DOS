@@ -30,9 +30,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Files\dotNetTest.dll" />
       <None Remove="Files\errorSound.beep" />
-      <None Remove="Files\mscorlib.dll" />
+      <None Remove="Files\License.txt" />
+      <None Remove="Files\main.mze" />
       <None Remove="Files\questionSound.beep" />
       <None Remove="Files\shutdownSound.beep" />
       <None Remove="Files\startSound.beep" />
@@ -40,20 +40,22 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Files\dotNetTest.dll" />
       <EmbeddedResource Include="Files\errorSound.beep" />
-      <EmbeddedResource Include="Files\mscorlib.dll" />
+      <EmbeddedResource Include="Files\license.txt" />
       <EmbeddedResource Include="Files\questionSound.beep" />
       <EmbeddedResource Include="Files\shutdownSound.beep" />
       <EmbeddedResource Include="Files\startSound.beep" />
       <EmbeddedResource Include="Files\warnSound.beep" />
     </ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Cosmos.Build" Version="0-*" NoWarn="NU1604" />
+		<PackageReference Include="Cosmos.Debug.Kernel" Version="0-*" NoWarn="NU1604" />
+		<PackageReference Include="Cosmos.System2" Version="0-*" NoWarn="NU1604" />
+	</ItemGroup>
+
     <ItemGroup>
-        <PackageReference Include="Cosmos.Build" Version="0-*" NoWarn="NU1604" />
-        <PackageReference Include="Cosmos.Debug.Kernel" Version="0-*" NoWarn="NU1604" />
-        <PackageReference Include="Cosmos.System2" Version="0-*" NoWarn="NU1604" />
-        <PackageReference Include="DotNetParser" Version="0.5.9" />
+      <EmbeddedResource Include="Files\main.mze" />
     </ItemGroup>
 
 </Project>

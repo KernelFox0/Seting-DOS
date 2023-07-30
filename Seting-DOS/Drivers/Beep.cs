@@ -1,6 +1,16 @@
 ﻿/// 
-/// PCSpeaker Beep driver, Last modified: 2022. 10. 19.
-/// Made for Seting-DOS, feel free to use any code from this
+/// PCSpeaker Beep driver, Last modified: 2023. 07. 30.
+/// 
+/// Copyright (C) 2023
+/// 
+/// This file is part of Seting-DOS.
+/// Seting-DOS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+/// as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+/// 
+/// Seting-DOS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+/// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+/// 
+/// You should have received a copy of the GNU General Public License along with Seting-DOS. If not, see <https://www.gnu.org/licenses/>.
 /// 
 
 using System;
@@ -8,11 +18,10 @@ using System.IO;
 using System.Linq;
 using Cosmos.HAL;
 using Seting_DOS.Services;
-using Seting_DOS.Apps;
 
 namespace Seting_DOS.Drivers
 {
-	public static class Beep
+    public static class Beep
 	{
 		public static string[] Load()
 		{
@@ -50,23 +59,23 @@ namespace Seting_DOS.Drivers
         {
 			public static void Error()
             {
-				BeepMusicMaker.MusicPlayer(@"0:\SDOS\System\errorSound.beep", false);
+				BeepMusicPlayer.MusicPlayer(@"0:\SDOS\System\errorSound.beep", false);
             }
 			public static void Warning()
 			{
-				BeepMusicMaker.MusicPlayer(@"0:\SDOS\System\warnSound.beep", false);
+				BeepMusicPlayer.MusicPlayer(@"0:\SDOS\System\warnSound.beep", false);
 			}
 			public static void Question()
 			{
-				BeepMusicMaker.MusicPlayer(@"0:\SDOS\System\questionSound.beep", false);
+				BeepMusicPlayer.MusicPlayer(@"0:\SDOS\System\questionSound.beep", false);
 			}
 			public static void Startup()
 			{
-				BeepMusicMaker.MusicPlayer(@"0:\SDOS\System\startSound.beep", false);
+				BeepMusicPlayer.MusicPlayer(@"0:\SDOS\System\startSound.beep", false);
 			}
 			public static void Shutdown()
 			{
-				BeepMusicMaker.MusicPlayer(@"0:\SDOS\System\shutdownSound.beep", false);
+				BeepMusicPlayer.MusicPlayer(@"0:\SDOS\System\shutdownSound.beep", false);
 			}
 		}
 		public static uint[] ReadFile(string path) //Read BeepMusic files to buffer

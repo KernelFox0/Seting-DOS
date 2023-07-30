@@ -1,75 +1,52 @@
 ﻿/// 
-/// COSMOS kernel, boot process, terminal and crash handler, Last modified: 2022. 10. 08.
-/// Made for Seting-DOS, feel free to use any code from this
+/// COSMOS kernel, boot process, terminal and crash handler, Last modified: 2023. 07. 30.
+/// 
+/// Copyright (C) 2023
+/// 
+/// This file is part of Seting-DOS.
+/// Seting-DOS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+/// as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+/// 
+/// Seting-DOS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+/// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+/// 
+/// You should have received a copy of the GNU General Public License along with Seting-DOS. If not, see <https://www.gnu.org/licenses/>.
 /// 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Sys = Cosmos.System;
-using Cosmos.System.ExtendedASCII;
-using System.IO;
-using Cosmos.System.FileSystem;
-using Cosmos.HAL;
-using Seting_DOS;
-using Seting_DOS.Drivers;
 using Seting_DOS.Services;
+using Seting_DOS.Apps;
+using Seting_DOS.TextUI;
 
 namespace Seting_DOS
 {
 	public class Kernel : Sys.Kernel
 	{
 
-		protected override void BeforeRun() //Boot process
+		protected override void BeforeRun() //Code the kernel executes at boot
 		{
 			try
 			{
 				Drivers.Power.Booter.Preboot();
-                #region Inactive Old Booter
-                /*string[] kern = { "done", "Seting-DOS base kernel loaded" };
-				Services.BootMSG.Write(kern);
-				#region Pre-boot and installation check
-				//Load important drivers
-				Services.BootMSG.Write(Drivers.DisplayDriver.Load());
-				Services.BootMSG.Write(Drivers.Keyboard.Load());
-				//Load filesystem driver to check installation
-				Services.BootMSG.Write(Drivers.VSFS.Load());
-				if (File.Exists(@"0:\SDOS\System\installed.idp")) { }
-				else //No setup, call installer
-				{
-					string[] waitMSG = { "warning", "System isn't set up!" };
-					BootMSG.Write(waitMSG);
-					Cosmos.HAL.Global.PIT.Wait(5000);
-					TextUI.Setup.Call();
-				}
-				#endregion
-				BootMSG.Write(Drivers.RTC.Check());
-				BootMSG.Write(Network.Load());
-				BootMSG.Write(Beep.Load());
-				BootMSG.Write(SystemData.Load());
-				//BootMSG.Write(DotNetParser.Load());
-				//Logon window
-				TextUI.LogonUI.LockScreen();
-				TextUI.Terminal.Init();*/
-                #endregion
             }
             catch (Exception ex)
             {
-				TextUI.CrashUI.KernelspaceCrash(ex);
+				CrashUI.KernelCrash(ex);
             }
 		}
 
-		protected override void Run() //Main prompt
+		protected override void Run() //Main loop
 		{
 			try
 			{
-				Apps.StatusBar.TerminalDisp();
-				CommandHandler.Handle(TextUI.Terminal.WriteShell());
+				StatusBar.TerminalDisp();
+				CmdProc.Process(Terminal.WriteShell());
 				Cosmos.Core.Memory.Heap.Collect();
 			}
 			catch (Exception ex)
             {
-				TextUI.CrashUI.KernelspaceCrash(ex);
+				CrashUI.KernelCrash(ex);
             }
 		}
 	}

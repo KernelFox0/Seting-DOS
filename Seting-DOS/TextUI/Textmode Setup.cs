@@ -1,6 +1,16 @@
 ﻿/// 
-/// System setup, Last modified: 2022. 10. 07.
-/// Made for Seting-DOS, feel free to use any code from this
+/// System setup, Last modified: 2023. 07. 30.
+/// 
+/// Copyright (C) 2023
+/// 
+/// This file is part of Seting-DOS.
+/// Seting-DOS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+/// as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+/// 
+/// Seting-DOS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+/// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+/// 
+/// You should have received a copy of the GNU General Public License along with Seting-DOS. If not, see <https://www.gnu.org/licenses/>.
 /// 
 
 using System;
@@ -15,6 +25,8 @@ using Cosmos.System.FileSystem;
 using Cosmos.HAL;
 using Seting_DOS;
 using Seting_DOS.Drivers;
+using Cosmos.System.FileSystem.VFS;
+using Seting_DOS.Services;
 
 namespace Seting_DOS.TextUI
 {
@@ -40,8 +52,8 @@ namespace Seting_DOS.TextUI
 			Console.Write("    setting up your user account.                                               ");
 			Console.Write("                                                                                ");
 			Console.Write("    - To set up your computer now, press Enter                                  ");
-			Console.Write("    - To enter testing (Live) mode, press L                                     ");
 			Console.Write("    - To exit the setup and shut down the computer, press F3                    ");
+			Console.Write("                                                                                ");
 			Console.Write("                                                                                ");
 			Console.Write("                                                                                ");
 			Console.Write("                                                                                ");
@@ -56,17 +68,15 @@ namespace Seting_DOS.TextUI
 			Console.Write("                                                                                ");
 			Console.BackgroundColor = ConsoleColor.White;
 			Console.ForegroundColor = ConsoleColor.Black;
-			Console.Write(" ENTER=Continue   L=Live mode   F3=Quit and shutdown                           ");
+			Console.Write(" ENTER=Continue   F3=Quit and shutdown                                         ");
 			#endregion
 			ConsoleKeyInfo key;
 			int setupMode = -1;
 			key = Console.ReadKey();
 			if (key.Key == ConsoleKey.Enter) { setupMode = 0; }
-			else if (key.Key == ConsoleKey.L) { setupMode = 1; }
 			else if (key.Key == ConsoleKey.F3) { setupMode = -1; }
 			else { Call(); }
 			if (setupMode == -1) { Sys.Power.Shutdown(); }
-			else if (setupMode == 1) { } //TODO: Implement live mode
 			else { LicScr(); }
 		}
 		private static void LicScr()
@@ -82,18 +92,18 @@ namespace Seting_DOS.TextUI
 			Console.Write(" Seting-DOS 2022 License agreement                                              ");
 			Console.Write("===================================                                             ");
 			Console.Write("                                                                                ");
-			Console.Write("    Seting-DOS(R) 2022 Home/Professional, COSMOS(R) Kernel                      ");
+			Console.Write("    Seting-DOS 2022 Home/Professional, COSMOS Kernel                            ");
 			Console.Write("                                                                                ");
-			Console.Write("    END-USER LICENSE AGREEMENT FOR ALPHA SETING-DOS SOFTWARE                    ");
+			Console.Write("    END-USER LICENSE AGREEMENT FOR BETA SETING-DOS SOFTWARE                     ");
 			Console.Write("                                                                                ");
 			Console.Write("    IMPORTANT-READ CAREFULLY:                                                   ");
-			Console.Write("    Do not make illegal copies!                                                 ");
-			Console.Write("    Do not redistribute without permission                                      ");
-			Console.Write("    Always credit the creator and the kernel maker (COSMOS) of this OS!         ");
+			Console.Write("    The software is licensed under GPL-3.0-only.                                ");
+			Console.Write("    It can be viewed at: https://www.gnu.org/licenses/gpl-3.0.html              ");
+			Console.Write("    Or you can read it with the 'license' command after the install process.    ");
+			Console.Write("                                                                                ");
 			Console.Write("                                                                                ");
 			Console.Write("    F8 - Agree the EULA and continue setting up                                 ");
 			Console.Write("    ESC - Disagree and return to the welcome screen                             ");
-			Console.Write("                                                                                ");
 			Console.Write("                                                                                ");
 			Console.Write("                                                                                ");
 			Console.Write("                                                                                ");
@@ -200,7 +210,6 @@ namespace Seting_DOS.TextUI
 		private static void Format()
 		{
 			bool format = false;
-		here:
 			#region Format screen draw
 			Console.BackgroundColor = ConsoleColor.White;
 			Console.ForegroundColor = ConsoleColor.Black;
@@ -240,21 +249,10 @@ namespace Seting_DOS.TextUI
 			Console.ForegroundColor = ConsoleColor.Yellow;
 			if (!format)
 			{
-				VSFS.EmptyRootPartition(); Console.SetCursorPosition(24, 14); Console.Write("█████████████████");
-				foreach (var disk in Sys.FileSystem.VFS.VFSManager.GetDisks())
-				{
-					foreach (var part in disk.Partitions)
-					{
-						if (part.RootPath == "0:\\")
-						{
-							Cosmos.HAL.Global.PIT.Wait(6000);
-							disk.FormatPartition(0, "FAT32", false);
-							Console.Write("████████████████");
-							format = true;
-							goto here;
-						}
-					}
-				}
+				VSFS.EmptyRootPartition(); Console.SetCursorPosition(24, 14); //Console.Write("█████████████████");
+				//VSFS.FormatRoot(); Console.Write("██████████████");
+				format = true;
+				//goto here;
 			}
 			Console.SetCursorPosition(24, 14); Console.Write("███████████████████████████████");
 			UserSetup();
@@ -318,7 +316,7 @@ namespace Seting_DOS.TextUI
 				Console.Write("[                          ]");
 			get:
 				Console.SetCursorPosition(8, 14);
-				string tmp = Drivers.Keyboard.KeyHandler(true);
+				string tmp = Drivers.Keyboard.KeyHandler(true, true);
 				if (password != tmp)
 				{
 					Console.SetCursorPosition(0, 14);
@@ -375,15 +373,15 @@ namespace Seting_DOS.TextUI
 			Console.Write("                                                                                ");
 			Console.BackgroundColor = ConsoleColor.White;
 			Console.ForegroundColor = ConsoleColor.Black;
-			Console.Write(" System version: OWO UA WIP                                                    ");
+			Console.Write(" System version: " + EnvVars.versionstring);
 			#endregion
 			//Remove _-s and spaces from username for folder name
 			string userFolder = username.Replace(" ", "-").Replace("_", "-");
 			Console.SetCursorPosition(8, 18);
 			Console.BackgroundColor = ConsoleColor.Blue;
 			Console.ForegroundColor = ConsoleColor.Yellow;
-            #region Creating folders
-            VSFS.act_dir = "/0/";
+			#region Creating folders
+			VSFS.act_dir = "/0/";
 			VSFS.cur_dir = "0:\\"; Console.Write("██"); Cosmos.HAL.Global.PIT.Wait(10);
 			VSFS.MakeDir("SDOS", true); Console.Write("██"); Cosmos.HAL.Global.PIT.Wait(10);
 			VSFS.MakeDir("Users", true); Console.Write("██"); Cosmos.HAL.Global.PIT.Wait(10);
@@ -394,6 +392,9 @@ namespace Seting_DOS.TextUI
 			VSFS.MakeDir("ProgramData", true); Console.Write("██"); Cosmos.HAL.Global.PIT.Wait(10);
 			VSFS.MakeDir("System", true); Console.Write("██"); Cosmos.HAL.Global.PIT.Wait(10);
 			VSFS.MakeDir("etc", true); Console.Write("██"); Cosmos.HAL.Global.PIT.Wait(10);
+			VSFS.act_dir = "/0/SDOS/ProgramData/";
+			VSFS.cur_dir = "0:\\SDOS\\ProgramData\\";
+			VSFS.MakeDir("MazeGame", true); Cosmos.HAL.Global.PIT.Wait(10);
 			VSFS.act_dir = "/0/Users/";
 			VSFS.cur_dir = "0:\\Users\\"; Console.Write("██"); Cosmos.HAL.Global.PIT.Wait(10);
 			VSFS.MakeDir(userFolder, true); Console.Write("██"); Cosmos.HAL.Global.PIT.Wait(10);
@@ -402,6 +403,9 @@ namespace Seting_DOS.TextUI
 			VSFS.MakeDir("Documents", true); Console.Write("██"); Cosmos.HAL.Global.PIT.Wait(10);
 			VSFS.MakeDir("Music", true); Console.Write("██"); Cosmos.HAL.Global.PIT.Wait(10);
 			VSFS.MakeDir("AppData", true); Console.Write("██"); Cosmos.HAL.Global.PIT.Wait(10);
+			VSFS.act_dir = "/0/Users/" + userFolder + "/AppData/";
+			VSFS.cur_dir = "0:\\Users\\" + userFolder + "\\AppData\\";
+			VSFS.MakeDir("MazeGame", true); Cosmos.HAL.Global.PIT.Wait(10);
 			#endregion
 			int x = Console.GetCursorPosition().Left;
 			Console.SetCursorPosition(9, 8);
@@ -422,8 +426,8 @@ namespace Seting_DOS.TextUI
 			Console.SetCursorPosition(x, 18);
 			Console.BackgroundColor = ConsoleColor.Blue;
 			Console.ForegroundColor = ConsoleColor.Yellow;
-            #region Creating and writing files
-            StreamWriter cn = new StreamWriter(@"0:\SDOS\preferences\compName.pref"); Console.Write("██");
+			#region Creating and writing files
+			StreamWriter cn = new StreamWriter(@"0:\SDOS\preferences\compName.pref"); Console.Write("██");
 			cn.Write("localhost");
 			cn.Close(); Cosmos.HAL.Global.PIT.Wait(10); Console.Write("██");
 			StreamWriter mute = new StreamWriter(@"0:\SDOS\system\mute.dat"); Console.Write("██");
@@ -432,10 +436,10 @@ namespace Seting_DOS.TextUI
 			StreamWriter vb = new StreamWriter(@"0:\SDOS\preferences\verboseBoot.pref"); Console.Write("██");
 			vb.Write("1");
 			vb.Close(); Cosmos.HAL.Global.PIT.Wait(10); Console.Write("██");
-            StreamWriter pmft = new StreamWriter(@"0:\SDOS\preferences\pmft.pref");
-            pmft.Write("progress");
-            pmft.Close(); Cosmos.HAL.Global.PIT.Wait(10);
-            Console.Write("██");
+			StreamWriter pmft = new StreamWriter(@"0:\SDOS\preferences\pmft.pref");
+			pmft.Write("progress");
+			pmft.Close(); Cosmos.HAL.Global.PIT.Wait(10);
+			Console.Write("██");
 			StreamWriter thm = new StreamWriter(@"0:\SDOS\preferences\theme.dat"); Console.Write("██");
 			thm.Write("classic");
 			thm.Close(); Cosmos.HAL.Global.PIT.Wait(10); Console.Write("██");
@@ -463,5 +467,5 @@ namespace Seting_DOS.TextUI
 			Console.ReadKey();
 			Sys.Power.Reboot();
 		}
-    }
+	}
 }

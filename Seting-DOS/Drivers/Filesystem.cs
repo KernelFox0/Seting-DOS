@@ -1,6 +1,16 @@
 ﻿/// 
-/// VSFS (Virtual Syntax File System) Driver, Last modified: 2022. 10. 09.
-/// Made for Seting-DOS, feel free to use any code from this
+/// VSFS (Virtual Syntax File System) Driver, Last modified: 2023. 07. 30.
+/// 
+/// Copyright (C) 2023
+/// 
+/// This file is part of Seting-DOS.
+/// Seting-DOS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+/// as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+/// 
+/// Seting-DOS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+/// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+/// 
+/// You should have received a copy of the GNU General Public License along with Seting-DOS. If not, see <https://www.gnu.org/licenses/>.
 /// 
 
 using System;
@@ -9,12 +19,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Sys = Cosmos.System;
-using Cosmos.System.ExtendedASCII;
 using System.IO;
 using Cosmos.System.FileSystem;
 using Cosmos.HAL;
 using Seting_DOS;
 using IL2CPU.API.Attribs;
+using System.Xml.Linq;
+using Seting_DOS.Services;
+using Cosmos.System.FileSystem.VFS;
 
 namespace Seting_DOS.Drivers
 {
@@ -69,11 +81,16 @@ namespace Seting_DOS.Drivers
 				foreach (var file in files)
 				{
 					Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.Write("                       " + "File");
-					Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
+					string type = FileTypes.GiveTypeOwO(GetFileExtension(file));
+					if (file.Length >  20) { Console.Write("                       " + "File"); }
+					int y = Console.GetCursorPosition().Top;
+                    Console.SetCursorPosition(0, y);
 					Console.ForegroundColor = ConsoleColor.Green;
 					Console.Write(file.Replace(cur_dir, ""));
-					Console.Write("\n");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+					if (file.Length > 20) { Console.Write("   " + type); }
+					else { Console.SetCursorPosition(23, y); Console.Write(type); }
+                    Console.Write("\n");
 					fNum++;
 				}
 				Console.ForegroundColor = ConsoleColor.Magenta;
@@ -100,21 +117,23 @@ namespace Seting_DOS.Drivers
 			}
 			else if (dest.StartsWith("/"))
 			{
-				if (Directory.Exists(dest))
+				if (dest == "/") { act_dir = "/0/"; cur_dir = "0:\\"; }
+				else if (Directory.Exists(ToRelPath(dest)))
 				{
 					act_dir = dest;
 					cur_dir = ToRelPath(act_dir);
-                    if (!act_dir.EndsWith("/")) { act_dir += "/"; }
-                    if (!cur_dir.EndsWith("\\")) { cur_dir += "\\"; }
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Error: Folder doesn't exists!");
+					if (!act_dir.EndsWith("/")) { act_dir += "/"; }
+					if (!cur_dir.EndsWith("\\")) { cur_dir += "\\"; }
+				}
+				else
+				{
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.WriteLine("Error: Folder doesn't exists!");
 					Beep.Sound.Error();
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-            }
+					Console.ForegroundColor = ConsoleColor.White;
+				}
+			}
+			else if (dest == "\\") { act_dir = "/0/"; cur_dir = "0:\\"; }
 			else
 			{
 				if (Directory.Exists(ToRelPath(act_dir + dest)))
@@ -128,21 +147,22 @@ namespace Seting_DOS.Drivers
 				{
 					Console.ForegroundColor = ConsoleColor.Red;
 					Console.WriteLine("Error: Folder doesn't exists!");
-                    Beep.Sound.Error();
-                    Console.ForegroundColor = ConsoleColor.White;
+					Beep.Sound.Error();
+					Console.ForegroundColor = ConsoleColor.White;
 				}
 			}
 		}
-		public static void MakeDir(string name, bool noFeedBack = false)
+		public static void MakeDir(string name, bool noFeedBack = false, bool noPathCombine = false)
 		{
-			string path = ToRelPath(act_dir + name.Replace(" ", "-").Replace("_", "-"));
+            string path = name;
+            if (!noPathCombine) { path = ToRelPath(act_dir + name.Replace(" ", "-").Replace("_", "-")); }
 			if (!Directory.Exists(path))
 			{
 				Directory.CreateDirectory(path);
 				if (!noFeedBack)
 				{
 					Console.ForegroundColor = ConsoleColor.Green;
-					Console.WriteLine("Folder '{0}' were created successfully!", name);
+					Console.WriteLine("Folder '{0}' were created successfully!", name.Remove(0, name.LastIndexOf("\\")));
 					Console.ForegroundColor = ConsoleColor.White;
 				}
 			}
@@ -156,9 +176,10 @@ namespace Seting_DOS.Drivers
 				}
 			}
 		}
-		public static void RemoveDir(bool force, string name)
+		public static void RemoveDir(bool force, string name, bool noFeedBack = false)
 		{
-			string path = ToRelPath(act_dir + name);
+			string path = name;
+			if (!name.StartsWith("0:\\")) { path = ToRelPath(act_dir + name); }
 			if (Directory.Exists(path))
 			{
 				string[] dirs = Directory.GetDirectories(path);
@@ -172,35 +193,47 @@ namespace Seting_DOS.Drivers
 					if (force)
 					{
 						Directory.Delete(path, true);
-						Console.ForegroundColor = ConsoleColor.Green;
-						Console.WriteLine("Folder '{0}' and it's content(s) were deleted successfully!", name);
-						Console.ForegroundColor = ConsoleColor.White;
+						if (!noFeedBack)
+						{
+							Console.ForegroundColor = ConsoleColor.Green;
+							Console.WriteLine("Folder '{0}' and it's content(s) were deleted successfully!", name);
+							Console.ForegroundColor = ConsoleColor.White;
+						}
 					}
 					else
 					{
-						Console.ForegroundColor = ConsoleColor.Red;
-						Console.WriteLine("Error: Folder is not empty!");
-						Console.ForegroundColor = ConsoleColor.Blue;
-						Console.WriteLine("Tip: To delete a non-empty folder use 'rm -rf' or 'rd /f'!");
-						Console.ForegroundColor = ConsoleColor.White;
+						if (!noFeedBack)
+						{
+							Console.ForegroundColor = ConsoleColor.Red;
+							Console.WriteLine("Error: Folder is not empty!");
+							Console.ForegroundColor = ConsoleColor.Blue;
+							Console.WriteLine("Tip: To delete a non-empty folder use the -r or the /f switch!");
+							Console.ForegroundColor = ConsoleColor.White;
+						}
 					}
 				}
 				else
 				{
 					Directory.Delete(path);
-					Console.ForegroundColor = ConsoleColor.Green;
-					Console.WriteLine("Folder '{0}' were deleted successfully!", name);
-					Console.ForegroundColor = ConsoleColor.White;
+					if (!noFeedBack)
+					{
+						Console.ForegroundColor = ConsoleColor.Green;
+						Console.WriteLine("Folder '{0}' were deleted successfully!", name);
+						Console.ForegroundColor = ConsoleColor.White;
+					}
 				}
 			}
 			else
 			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine("Error: Folder doesn't exists!");
-				Console.ForegroundColor = ConsoleColor.White;
+				if (!noFeedBack)
+				{
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.WriteLine("Error: Folder doesn't exists!");
+					Console.ForegroundColor = ConsoleColor.White;
+				}
 			}
 		}
-		public static void RemoveFile(string name, bool noAsk = false)
+		public static void RemoveFile(string name, bool noAsk = false, bool noFeedBack = false)
 		{
 			string path = ToRelPath(act_dir + name);
 			if (File.Exists(path))
@@ -208,9 +241,12 @@ namespace Seting_DOS.Drivers
 				if (noAsk)
 				{
 					File.Delete(path);
-					Console.ForegroundColor = ConsoleColor.Green;
-					Console.WriteLine("File '{0}' were deleted successfully!", name);
-					Console.ForegroundColor = ConsoleColor.White;
+					if (!noFeedBack)
+					{
+						Console.ForegroundColor = ConsoleColor.Green;
+						Console.WriteLine("File '{0}' were deleted successfully!", name);
+						Console.ForegroundColor = ConsoleColor.White;
+					}
 				}
 				else
 				{
@@ -228,14 +264,96 @@ namespace Seting_DOS.Drivers
 			}
 			else
 			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine("Error: File doesn't exists!");
-				Console.ForegroundColor = ConsoleColor.White;
+				if (!noFeedBack)
+				{
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.WriteLine("Error: File doesn't exists!");
+					Beep.Sound.Error();
+					Console.ForegroundColor = ConsoleColor.White;
+				}
 			}
 		}
-		public static void CopyFile(string sourceName, string targetName, bool noFeedBack = false)
+		public static void Copy(string sourceName, string targetName, bool noFeedBack = false, bool multiple = false)
 		{
 			//To do: Implement working file copy
+			if (!multiple)
+			{
+				if (!sourceName.StartsWith("/0/")) { sourceName = act_dir + sourceName; }
+				if (!targetName.StartsWith("/0/")) { targetName = act_dir + targetName; }
+				sourceName = ToRelPath(sourceName);
+				targetName = ToRelPath(targetName);
+			}
+			if (File.Exists(sourceName))
+			{
+				if (File.Exists(targetName))
+				{
+					Console.ForegroundColor = ConsoleColor.Yellow;
+					Console.Write("Warning: Target file \"{0}\" already exists! Overwrite? [Y/N]: ", Path.GetFileName(targetName));
+					Beep.Sound.Warning();
+					ConsoleKeyInfo choice = Console.ReadKey();
+					if (choice.Key == ConsoleKey.Y) { RemoveFile(targetName, true, true); }
+					else { Console.Write("\n"); goto done; }
+                    Console.Write("\n");
+                    Console.ForegroundColor = ConsoleColor.White;
+				}
+				File.Copy(sourceName, targetName);
+				if (!noFeedBack)
+				{
+					Console.ForegroundColor = ConsoleColor.White;
+					Console.WriteLine("{0}=>{1}", Path.GetFileName(sourceName), Path.GetFileName(targetName));
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    if (!multiple) { Console.WriteLine("File copied successfully!"); }
+					Console.ForegroundColor = ConsoleColor.White;
+				}
+			done:;
+			}
+			else if (sourceName.Contains("*.*"))
+			{
+				sourceName = sourceName.Replace("*.*", "");
+				string[] files = Directory.GetFiles(sourceName);
+				if (File.Exists(targetName)) { targetName = Path.GetDirectoryName(targetName); }
+                if (!targetName.EndsWith("\\")) { targetName = targetName + "\\"; }
+                foreach (var file in files)
+				{
+					Copy(sourceName + file, targetName + file, noFeedBack, true);
+				}
+				if (!noFeedBack)
+				{
+					Console.ForegroundColor = ConsoleColor.Green;
+					Console.WriteLine("Files copied successfully!");
+					Console.ForegroundColor = ConsoleColor.White;
+				}
+            }
+			else if (Directory.Exists(sourceName))
+			{
+				if (Directory.Exists(targetName))
+				{
+					Console.ForegroundColor = ConsoleColor.Yellow;
+					Console.Write("Warning: Target folder already exists! Overwrite? [Y/N]: ");
+					Beep.Sound.Warning();
+					ConsoleKeyInfo choice = Console.ReadKey();
+					if (choice.Key == ConsoleKey.Y) { RemoveDir(true, targetName, true); }
+					else { Console.Write("\n"); goto done; }
+					Console.Write("\n");
+					Console.ForegroundColor = ConsoleColor.White;
+				}
+				Console.WriteLine("SRC: {0}, TRG: {1}", sourceName, targetName); Console.ReadKey();
+				MakeDir(targetName, true, true);
+				if (!sourceName.EndsWith("\\")) { sourceName = sourceName + "\\"; }
+				Copy(sourceName + "*.*", targetName, true, true);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Folder copied successfully!");
+                Console.ForegroundColor = ConsoleColor.White;
+			done:;
+            }
+			else
+			{
+				Console.ForegroundColor = ConsoleColor.Red;
+				Console.WriteLine("T: {0}", sourceName);
+				Console.WriteLine("Error: Source file or folder doesn't exists!");
+				Beep.Sound.Error();
+				Console.ForegroundColor = ConsoleColor.White;
+			}
 		}
 		public static void EmptyRootPartition()
 		{
@@ -243,9 +361,10 @@ namespace Seting_DOS.Drivers
 			string[] files = Directory.GetFiles(root_dir);
 			foreach (var dir in dirs)
 			{
-				if (Directory.Exists(dir))
+				string path = "0:\\" + dir;
+				if (Directory.Exists(path))
 				{
-					Directory.Delete(root_dir + dir, true);
+					RemoveDir(true, path, true);
 				}
 			}
 			foreach (var file in files)
@@ -253,22 +372,11 @@ namespace Seting_DOS.Drivers
 				File.Delete(root_dir + file);
 			}
 		}
-		public static void ListDrives()
+		public static string GetFileExtension(string file)
 		{
-			DriveInfo[] drives = DriveInfo.GetDrives();
-			foreach (var drive in drives)
-			{
-				Console.ForegroundColor = ConsoleColor.Yellow; Console.Write(drive.RootDirectory);
-				Console.ForegroundColor = ConsoleColor.White; Console.Write(" - ");
-				//Console.ForegroundColor = ConsoleColor.Blue; Console.Write(drive.DriveType);
-				Console.ForegroundColor = ConsoleColor.White; Console.Write(" - ");
-				//Console.ForegroundColor = ConsoleColor.Magenta; Console.Write(drive.DriveFormat);
-				Console.ForegroundColor = ConsoleColor.White; Console.Write(" - ");
-				//Console.ForegroundColor = ConsoleColor.Green; Console.Write(drive.AvailableFreeSpace / 1024 / 1024);
-				Console.ForegroundColor = ConsoleColor.White; Console.Write(" - ");
-				//Console.ForegroundColor = ConsoleColor.Red; Console.Write(drive.TotalSize / 1024 / 1024);
-			}
-		}
+            string[] ext = file.Split('.');
+            return ext[ext.Length - 1];
+        }
 		#region Import resourceStream
 		[ManifestResourceStream(ResourceName = "Seting_DOS.Files.mscorlib.dll")]
 		public static byte[] mscorlib;
@@ -284,15 +392,13 @@ namespace Seting_DOS.Drivers
 		public static byte[] warnSound;
 		[ManifestResourceStream(ResourceName = "Seting_DOS.Files.questionSound.beep")]
 		public static byte[] questionSound;
-		#endregion
-		public static void CopyAllResourceStreams()
+        [ManifestResourceStream(ResourceName = "Seting_DOS.Files.main.mze")]
+        public static byte[] mainMaze;
+        [ManifestResourceStream(ResourceName = "Seting_DOS.Files.license.txt")]
+        public static byte[] licenseFile;
+        #endregion
+        public static void CopyAllResourceStreams()
 		{
-			using var msdot = new BinaryWriter(File.OpenWrite(@"0:\SDOS\System\mscorlib.dll"));
-			msdot.Write(mscorlib);
-			msdot.Close();
-			using var dottest = new BinaryWriter(File.OpenWrite(@"0:\SDOS\System\dotNetTest.app"));
-			dottest.Write(dotnettest);
-			dottest.Close();
 			using var startbeep = new BinaryWriter(File.OpenWrite(@"0:\SDOS\System\startSound.beep"));
 			startbeep.Write(startSound);
 			startbeep.Close();
@@ -308,7 +414,13 @@ namespace Seting_DOS.Drivers
 			using var questbeep = new BinaryWriter(File.OpenWrite(@"0:\SDOS\System\questionSound.beep"));
 			questbeep.Write(questionSound);
 			questbeep.Close();
-		}
+            using var mainmze = new BinaryWriter(File.OpenWrite(@"0:\SDOS\ProgramData\MazeGame\main.mze"));
+            mainmze.Write(mainMaze);
+            mainmze.Close();
+            using var licfile = new BinaryWriter(File.OpenWrite(@"0:\SDOS\etc\license.txt"));
+            licfile.Write(licenseFile);
+            licfile.Close();
+        }
 		public static string ToVirtPath(string relPath)
 		{
 			return "/" + relPath.Replace("\\", "/").Replace(":", "");
@@ -445,9 +557,9 @@ namespace Seting_DOS.Drivers
 					Console.ForegroundColor = ConsoleColor.Yellow; Console.WriteLine("████████████████████████");
 					Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("█████████"); Console.ForegroundColor = ConsoleColor.DarkMagenta; Console.Write("██████"); Console.ForegroundColor = ConsoleColor.Yellow; Console.WriteLine("█████████");
 					Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("████████"); Console.ForegroundColor = ConsoleColor.DarkMagenta; Console.Write("█"); Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("██████"); Console.ForegroundColor = ConsoleColor.DarkMagenta; Console.Write("█"); Console.ForegroundColor = ConsoleColor.Yellow; Console.WriteLine("████████");
-                    Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("████████"); Console.ForegroundColor = ConsoleColor.DarkMagenta; Console.Write("█"); Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("██████"); Console.ForegroundColor = ConsoleColor.DarkMagenta; Console.Write("█"); Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("████████"); Console.Write("                 Type pmft to change flag!"); Console.Write("\n");
-                    Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("█████████"); Console.ForegroundColor = ConsoleColor.DarkMagenta; Console.Write("██████"); Console.ForegroundColor = ConsoleColor.Yellow; Console.WriteLine("█████████");
-                    Console.ForegroundColor = ConsoleColor.Yellow; Console.WriteLine("████████████████████████");
+					Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("████████"); Console.ForegroundColor = ConsoleColor.DarkMagenta; Console.Write("█"); Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("██████"); Console.ForegroundColor = ConsoleColor.DarkMagenta; Console.Write("█"); Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("████████"); Console.Write("                 Type pmft to change flag!"); Console.Write("\n");
+					Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("█████████"); Console.ForegroundColor = ConsoleColor.DarkMagenta; Console.Write("██████"); Console.ForegroundColor = ConsoleColor.Yellow; Console.WriteLine("█████████");
+					Console.ForegroundColor = ConsoleColor.Yellow; Console.WriteLine("████████████████████████");
 				}
 				if (type == "agender")
 				{

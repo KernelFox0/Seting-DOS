@@ -1,8 +1,18 @@
 ﻿/// 
-/// StatusBar application, Last modified: 2022. 09. 30.
+/// StatusBar application, Last modified: 2023. 07. 30.
 /// Note: App is always "running", no terminal command
-/// Made for Seting-DOS, feel free to use any code from this
-///
+/// 
+/// Copyright (C) 2023
+/// 
+/// This file is part of Seting-DOS.
+/// Seting-DOS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+/// as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+/// 
+/// Seting-DOS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+/// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+/// 
+/// You should have received a copy of the GNU General Public License along with Seting-DOS. If not, see <https://www.gnu.org/licenses/>.
+/// 
 
 using System;
 using System.Collections.Generic;
@@ -19,7 +29,6 @@ namespace Seting_DOS.Apps
 			ConsoleColor color = Console.ForegroundColor;
 			Console.ForegroundColor = ConsoleColor.White;
 			string[] time = Drivers.RTC.GetTime();
-			bool net = Drivers.Network.isAvailable();
 			int xPos = Console.GetCursorPosition().Left;
 			int yPos = Console.GetCursorPosition().Top;
 			Console.SetCursorPosition(69, 0);

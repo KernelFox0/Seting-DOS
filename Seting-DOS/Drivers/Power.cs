@@ -1,6 +1,16 @@
 ﻿/// 
-/// Power manager driver, Last modified: 2022. 10. 19.
-/// Made for Seting-DOS, feel free to use any code from this
+/// Power manager driver, Last modified: 2023. 07. 30.
+/// 
+/// Copyright (C) 2023
+/// 
+/// This file is part of Seting-DOS.
+/// Seting-DOS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+/// as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+/// 
+/// Seting-DOS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+/// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+/// 
+/// You should have received a copy of the GNU General Public License along with Seting-DOS. If not, see <https://www.gnu.org/licenses/>.
 /// 
 
 using System;
@@ -59,9 +69,11 @@ namespace Seting_DOS.Drivers
 			public static void Preboot()
 			{
 				// This code will load the base display and FS driver, check for installed OS and load pre-boot system variables to memory
-				string[] kern = { "done", "Seting-DOS base kernel loaded" };
-				BootMSG.Write(kern);
-				BootMSG.Write(DisplayDriver.Load());
+				string[] kernelMSG = { "done", "Seting-DOS base kernel loaded (COSMOS)" };
+				BootMSG.Write(kernelMSG);
+				kernelMSG[0] = "info"; kernelMSG[1] = "COSMOS booter done, SetingBoot (or OwOBooter) will handle the rest";
+				BootMSG.Write(kernelMSG);
+                BootMSG.Write(DisplayDriver.Load());
 				BootMSG.Write(VSFS.Load());
 				if (!File.Exists(@"0:\SDOS\System\installed.idp"))
 				{
@@ -72,90 +84,94 @@ namespace Seting_DOS.Drivers
 				}
 				Boot();
 			}
-			public static void Boot()
+			public static void Boot(bool livemode = false)
 			{
-				bool animation = !EnvVars.verboseMode;
-				// This code will load all the drivers and system variables to memory and either print verbose boot or play the boot animation
-				if (animation)
+				if (!livemode)
 				{
-					Console.Clear();
-					Console.SetCursorPosition(0, 0);
-					Console.ForegroundColor = ConsoleColor.White; Console.BackgroundColor = ConsoleColor.Black;
-					Console.Write("                                                                                "); Global.PIT.Wait(10);
-                    Console.Write("                                                                                "); Global.PIT.Wait(10);
-                    Console.Write("                                                                                "); Global.PIT.Wait(10);
-                    Console.Write("                                                                                "); Global.PIT.Wait(10);
-                    Console.Write("                                     XXXXXXX                                    "); Global.PIT.Wait(10);
-                    Console.Write("                                   XX   X   XX                                  "); Global.PIT.Wait(10);
-                    Console.Write("                                  X    XXX    X                                 "); Global.PIT.Wait(10);
-                    Console.Write("                                  X   X X X   X                                 "); Global.PIT.Wait(10);
-                    Console.Write("                                  X     X     X                                 "); Global.PIT.Wait(10);
-                    Console.Write("                                   XX   X   XX                                  "); Global.PIT.Wait(10);
-                    Console.Write("                                     XXXXXXX                                    "); Global.PIT.Wait(10);
-                    Console.Write("                 .-.       .                     .--.  .--.  .-.                "); Global.PIT.Wait(10);
-                    Console.Write("                (   )     _|_  o                 |   ::    :(   )               "); Global.PIT.Wait(10);
-                    Console.Write("                 `-.  .-.  |   .  .--. .-.. ____ |   ||    | `-.                "); Global.PIT.Wait(10);
-                    Console.Write("                (   )(.-'  |   |  |  |(   |      |   ;:    ;(   )               "); Global.PIT.Wait(10);
-                    Console.Write("                 `-'  `--' `-' '  '  ` `-`|      '--'  `--'  `-'                "); Global.PIT.Wait(10);
-                    Console.Write("                                       ._.'                                     "); Global.PIT.Wait(10);
-                    Console.Write("                                                                                "); Global.PIT.Wait(10);
-                    Console.Write("                       ===================================                      "); Global.PIT.Wait(10);
-                    Console.Write("                       |                                 |                      "); Global.PIT.Wait(10);
-                    Console.Write("                       ===================================                      "); Global.PIT.Wait(10);
-                    Console.Write("                                                                                "); Global.PIT.Wait(10);
-                    Console.Write("                                                                                "); Global.PIT.Wait(10);
-                    Console.Write("                                                                                "); Global.PIT.Wait(10);
-                    Console.Write(" Seting-DOS(tm) Color Operating System                                         "); Global.PIT.Wait(10);
-                    Console.ForegroundColor = ConsoleColor.Blue;
-					Console.SetCursorPosition(34, 4);
-					Console.Write("   XXXXXXX   ");
-					Console.SetCursorPosition(34, 5);
-					Console.Write(" XX   X   XX ");
-					Console.SetCursorPosition(34, 6);
-					Console.Write("X    XXX    X");
-					Console.SetCursorPosition(34, 7);
-					Console.Write("X   X X X   X");
-					Console.SetCursorPosition(34, 8);
-					Console.Write("X     X     X");
-					Console.SetCursorPosition(34, 9);
-					Console.Write(" XX   X   XX ");
-					Console.SetCursorPosition(34, 10);
-					Console.Write("   XXXXXXX   ");
-					Console.ForegroundColor = ConsoleColor.Green;
-					Console.SetCursorPosition(38, 5);
-					Console.Write("  X  ");
-					Console.SetCursorPosition(38, 6);
-					Console.Write(" XXX ");
-					Console.SetCursorPosition(38, 7);
-					Console.Write("X X X");
-					Console.SetCursorPosition(38, 8);
-					Console.Write("  X  ");
-                    Console.SetCursorPosition(38, 9);
-                    Console.Write("  X  ");
-					Console.SetCursorPosition(25, 19);
+					bool animation = !EnvVars.verboseMode;
+					// This code will load all the drivers and system variables to memory and either print verbose boot or play the boot animation
+					if (animation)
+					{
+						Console.Clear();
+						Console.SetCursorPosition(0, 0);
+						Console.ForegroundColor = ConsoleColor.White; Console.BackgroundColor = ConsoleColor.Black;
+						Console.Write("                                                                                "); Global.PIT.Wait(10);
+						Console.Write("                                                                                "); Global.PIT.Wait(10);
+						Console.Write("                                                                                "); Global.PIT.Wait(10);
+						Console.Write("                                                                                "); Global.PIT.Wait(10);
+						Console.Write("                                     XXXXXXX                                    "); Global.PIT.Wait(10);
+						Console.Write("                                   XX   X   XX                                  "); Global.PIT.Wait(10);
+						Console.Write("                                  X    XXX    X                                 "); Global.PIT.Wait(10);
+						Console.Write("                                  X   X X X   X                                 "); Global.PIT.Wait(10);
+						Console.Write("                                  X     X     X                                 "); Global.PIT.Wait(10);
+						Console.Write("                                   XX   X   XX                                  "); Global.PIT.Wait(10);
+						Console.Write("                                     XXXXXXX                                    "); Global.PIT.Wait(10);
+						Console.Write("                 .-.       .                     .--.  .--.  .-.                "); Global.PIT.Wait(10);
+						Console.Write("                (   )     _|_  o                 |   ::    :(   )               "); Global.PIT.Wait(10);
+						Console.Write("                 `-.  .-.  |   .  .--. .-.. ____ |   ||    | `-.                "); Global.PIT.Wait(10);
+						Console.Write("                (   )(.-'  |   |  |  |(   |      |   ;:    ;(   )               "); Global.PIT.Wait(10);
+						Console.Write("                 `-'  `--' `-' '  '  ` `-`|      '--'  `--'  `-'                "); Global.PIT.Wait(10);
+						Console.Write("                                       ._.'                                     "); Global.PIT.Wait(10);
+						Console.Write("                                                                                "); Global.PIT.Wait(10);
+						Console.Write("                       ===================================                      "); Global.PIT.Wait(10);
+						Console.Write("                       |                                 |                      "); Global.PIT.Wait(10);
+						Console.Write("                       ===================================                      "); Global.PIT.Wait(10);
+						Console.Write("                                                                                "); Global.PIT.Wait(10);
+						Console.Write("                                                                                "); Global.PIT.Wait(10);
+						Console.Write("                                                                                "); Global.PIT.Wait(10);
+						Console.Write(" Seting-DOS(tm) Color Operating System                                         "); Global.PIT.Wait(10);
+						Console.ForegroundColor = ConsoleColor.Blue;
+						Console.SetCursorPosition(34, 4);
+						Console.Write("   XXXXXXX   ");
+						Console.SetCursorPosition(34, 5);
+						Console.Write(" XX   X   XX ");
+						Console.SetCursorPosition(34, 6);
+						Console.Write("X    XXX    X");
+						Console.SetCursorPosition(34, 7);
+						Console.Write("X   X X X   X");
+						Console.SetCursorPosition(34, 8);
+						Console.Write("X     X     X");
+						Console.SetCursorPosition(34, 9);
+						Console.Write(" XX   X   XX ");
+						Console.SetCursorPosition(34, 10);
+						Console.Write("   XXXXXXX   ");
+						Console.ForegroundColor = ConsoleColor.Green;
+						Console.SetCursorPosition(38, 5);
+						Console.Write("  X  ");
+						Console.SetCursorPosition(38, 6);
+						Console.Write(" XXX ");
+						Console.SetCursorPosition(38, 7);
+						Console.Write("X X X");
+						Console.SetCursorPosition(38, 8);
+						Console.Write("  X  ");
+						Console.SetCursorPosition(38, 9);
+						Console.Write("  X  ");
+						Console.SetCursorPosition(25, 19);
+					}
+					Console.ForegroundColor = ConsoleColor.Blue;
+					BootMSG.Write(Keyboard.Load()); Console.ForegroundColor = ConsoleColor.Blue;
+					if (animation) { Console.Write("██"); }
+					BootMSG.Write(RTC.Check()); Console.ForegroundColor = ConsoleColor.Blue;
+					if (animation) { Console.Write("██"); }
+					BootMSG.Write(Beep.Load()); Console.ForegroundColor = ConsoleColor.Blue;
+					if (animation) { Console.Write("██"); }
+					BootMSG.Write(SystemData.Load()); Console.ForegroundColor = ConsoleColor.Blue;
+					if (animation) { Console.Write("██"); }
+					//BootMSG.Write(DotNetParser.Load());
+					if (animation) { Console.Write("████"); Global.PIT.Wait(500); }
+					if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
+					if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
+					if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
+					if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
+					if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
+					if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
+					if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
+					if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
+					if (animation) { Console.Write("███"); Global.PIT.Wait(200); }
+					TextUI.LogonUI.LockScreen();
+					TextUI.Terminal.Init();
 				}
-				Console.ForegroundColor = ConsoleColor.Blue;
-				BootMSG.Write(Keyboard.Load()); Console.ForegroundColor = ConsoleColor.Blue;
-                if (animation) { Console.Write("██"); }
-				BootMSG.Write(RTC.Check()); Console.ForegroundColor = ConsoleColor.Blue;
-                if (animation) { Console.Write("██"); }
-				BootMSG.Write(Beep.Load()); Console.ForegroundColor = ConsoleColor.Blue;
-                if (animation) { Console.Write("██"); }
-				BootMSG.Write(SystemData.Load()); Console.ForegroundColor = ConsoleColor.Blue;
-                if (animation) { Console.Write("██"); }
-				//BootMSG.Write(DotNetParser.Load());
-				if (animation) { Console.Write("████"); Global.PIT.Wait(500); }
-				if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
-                if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
-                if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
-				if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
-				if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
-				if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
-				if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
-				if (animation) { Console.Write("██"); Global.PIT.Wait(500); }
-				if (animation) { Console.Write("███"); Global.PIT.Wait(200); }
-				TextUI.LogonUI.LockScreen();
-				TextUI.Terminal.Init();
+				else { TextUI.Terminal.Init(); }
 			}
 		}
 	}

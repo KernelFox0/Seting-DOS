@@ -1,6 +1,16 @@
 ﻿/// 
-/// Textfile operation services, Last modified: 2022. 10. 02.
-/// Made for Seting-DOS, feel free to use any code from this
+/// Textfile operation services, Last modified: 2023. 07. 30.
+/// 
+/// Copyright (C) 2023
+/// 
+/// This file is part of Seting-DOS.
+/// Seting-DOS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+/// as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+/// 
+/// Seting-DOS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+/// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+/// 
+/// You should have received a copy of the GNU General Public License along with Seting-DOS. If not, see <https://www.gnu.org/licenses/>.
 /// 
 
 using System;
@@ -17,7 +27,7 @@ namespace Seting_DOS.Services
 	{
 		public static void Read(string file = "")
 		{
-			string path = Drivers.VSFS.ToRelPath(Drivers.VSFS.act_dir + file);
+			string path = VSFS.ToRelPath(VSFS.act_dir + file);
 			if (file == "")
 			{
 				Console.Write("The quick brown ");
@@ -44,16 +54,12 @@ namespace Seting_DOS.Services
 					}
 					else
 					{
-						Console.ForegroundColor = ConsoleColor.Red;
-						Console.WriteLine("Error: For security reasons, reading password files are disabled!");
-						Console.ForegroundColor = ConsoleColor.White;
+						Messages.Error("Error: For security reasons, the ability to read password files is disabled!");
 					}
 				}
 				else
 				{
-					Console.ForegroundColor = ConsoleColor.Red;
-					Console.WriteLine("Error: File doesn't exists!");
-					Console.ForegroundColor = ConsoleColor.White;
+					Messages.Error("Error: File doesn't exists!");
 				}
 			}
 		}
