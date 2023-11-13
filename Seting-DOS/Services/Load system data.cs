@@ -1,5 +1,5 @@
 ﻿/// 
-/// Environment variable loader, Last modified: 2023. 07. 30.
+/// Environment variable loader, Last modified: 2023. 11. 13.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -25,11 +25,19 @@ namespace Seting_DOS.Services
             try
             {
                 StreamReader host = new StreamReader(@"0:\SDOS\preferences\compName.pref");
-                Services.EnvVars.hostname = host.ReadToEnd();
+                EnvVars.hostname = host.ReadToEnd();
                 host.Close();
                 StreamReader theme = new StreamReader(@"0:\SDOS\preferences\theme.dat");
-                Services.EnvVars.theme = theme.ReadToEnd();
+                EnvVars.theme = theme.ReadToEnd();
                 theme.Close();
+                StreamReader verbose = new StreamReader(@"0:\SDOS\preferences\verboseBoot.pref");
+                string content = verbose.ReadToEnd().ToLower().Trim(' ').Trim('\n');
+                EnvVars.verboseMode = (content == "1");
+                verbose.Close();
+                StreamReader debug = new StreamReader(@"0:\SDOS\preferences\debugBoot.pref");
+                content = debug.ReadToEnd().ToLower().Trim(' ').Trim('\n');
+                EnvVars.debugBoot = (content == "1");
+                debug.Close();
             }
             catch (Exception e)
             {

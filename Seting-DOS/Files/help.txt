@@ -1,0 +1,56 @@
+﻿Seting-DOS Help file
+============================================================
+Legend:
+< > - required argument
+[ ] - optional argument
+============================================================
+Power related commands:
+shutdown [ -s | -acpi | -cpu ] - Shutdowns the computer [using a specified
+mode]
+restart [ -s | -acpi | -cpu ] - Restarts the computer [using a specified mode]
+logoff - Logs the current user out
+============================================================
+Filesystem related commands:
+reset - Resets the system to initiate a reintall
+dir; ls [ . | .. | (directory) ] - Lists content in current / [specified]
+directory
+cd.. - Goes to parent directory
+cd [ .. | (directory) ] - Shows current directory / [goes to specified
+directory]
+md; mkdir < (name) > - Makes a new directory
+rd; rmdir [ -r | /f ] < (name) > - Removes a(n) empty / [non-empty] directory
+rm; del [ -q | /q ] < (name) > - Removes a file [without comfirmation]
+cp; copy < (name1) > < (name2) > - Copies a file/directory from one place to
+another
+mv; move < (name1) > < (name2) > - Moves a file/directory from one place to
+another
+ren; rename < (name1) > < (name2) > - Renames a file/directory
+cat; type; read [ (name) ] - Prints a sample text / [the contents of a file]
+write < (name) > [ (text) ] - Creates an empty file / [writes given text to a
+file]
+============================================================
+System commands:
+alias [ -s ] < (alias) > < (command) > - Creates a(n) [system] alias for a
+command
+alias -r [ -s ] < (alias) > - Removes a(n) [system] alias
+alias -e [ (option) ] - Prints out extras / [executes an extra] of the alias
+manager
+clr; cls; clear - Removes text from the screen
+crash [ k | u ] [ reason ] - Crashes the system [with a custom reason]
+postinstall - Restarts the post-install process
+envvars - Debug command, prints out environment variables
+cmdhitory; history - Prints out your command history
+license [show < c | w > ] - Shows the license / [extra license information]
+help - Shows this file, aka the help file
+preferences; prefs; settings - Opens the preference editor
+============================================================
+Applications:
+calc - Calculator
+credits - Shows the credits for this OS
+neofetch - Shows system information
+play < (name) > - Plays beep music from a file
+edit; textedit; notepad [ (name) ] - Simple text editor [opens/creates a file]
+maze; mazegame - A maze game
+
+You can create custom commands with aliases, which links to any of the
+commands above. To execute, simply input the alias as a command.

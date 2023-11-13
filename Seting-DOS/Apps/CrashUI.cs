@@ -16,47 +16,47 @@
 using System;
 using Seting_DOS.Services;
 
-namespace Seting_DOS.TextUI
+namespace Seting_DOS.Apps
 {
-	public static class CrashUI
-	{
-		static Random rnd = new Random();
-		public static void ApplicationCrash(Exception crash)
-		{
-			#region UI
-			int screen = rnd.Next(1, 4);
-			int y = 11;
+    public static class CrashUI
+    {
+        static Random rnd = new Random();
+        public static void ApplicationCrash(Exception crash)
+        {
+            #region UI
+            int screen = rnd.Next(1, 4);
+            int y = 11;
             int y2 = 15;
-			if (screen == 1)
-			{
-				y = 11;
+            if (screen == 1)
+            {
+                y = 11;
                 y2 = 15;
-			}
-			else if (screen == 2)
-			{
-				y = 14;
+            }
+            else if (screen == 2)
+            {
+                y = 14;
                 y2 = 18;
-			}
-			else
-			{
-				y = 13;
+            }
+            else
+            {
+                y = 13;
                 y2 = 17;
-			}
-			Console.BackgroundColor = ConsoleColor.Blue;
-			Console.ForegroundColor = ConsoleColor.White;
-			Console.Clear();
-			if (screen == 1)
-			{
-				Console.Write("                                                                                ");
-				Console.Write("                                                                                ");
-				Console.Write("                                __            __                                ");
-				Console.Write("                                \\_\\__      __/_/                                ");
-				Console.Write("                               / _ \\ \\ /\\ / / _ \\                               ");
-				Console.Write("                              | |_| \\ V  V / |_| |                              ");
-				Console.Write("                               \\___/ \\_/\\_/ \\___/                               ");
-				Console.Write("                                                                                ");
-				Console.Write("                                                                                ");
-				Console.Write("                                                                                ");
+            }
+            Console.BackgroundColor = ConsoleColor.Blue;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Clear();
+            if (screen == 1)
+            {
+                Console.Write("                                                                                ");
+                Console.Write("                                                                                ");
+                Console.Write("                                __            __                                ");
+                Console.Write("                                \\_\\__      __/_/                                ");
+                Console.Write("                               / _ \\ \\ /\\ / / _ \\                               ");
+                Console.Write("                              | |_| \\ V  V / |_| |                              ");
+                Console.Write("                               \\___/ \\_/\\_/ \\___/                               ");
+                Console.Write("                                                                                ");
+                Console.Write("                                                                                ");
+                Console.Write("                                                                                ");
                 Console.Write(" Your system crashed. That's not good! Crash type: Application crash            ");
                 Console.Write(" Reason:                                                                        ");
                 Console.Write("                                                                                ");
@@ -67,14 +67,14 @@ namespace Seting_DOS.TextUI
                 Console.Write("                                                                                ");
                 Console.Write("                                                                                ");
                 Console.Write("                                                                                ");
-				Console.Write(" R = Return to system     Any other = Restart kernel                            ");
-				Console.Write("                                                                                ");
-				Console.Write("                                                                                ");
-				Console.Write("                                                                                ");
-				Console.Write("                                                                              ");
-			}
-			else if (screen == 2)
-			{
+                Console.Write(" R = Return to system     Any other = Restart kernel                            ");
+                Console.Write("                                                                                ");
+                Console.Write("                                                                                ");
+                Console.Write("                                                                                ");
+                Console.Write("                                                                              ");
+            }
+            else if (screen == 2)
+            {
                 Console.Write("                                                                                ");
                 Console.Write("                                                                                ");
                 Console.Write("        _                                                                       ");
@@ -101,8 +101,8 @@ namespace Seting_DOS.TextUI
                 Console.Write(" R = Return to system     Any other = Restart kernel                            ");
                 Console.Write("                                                                              ");
             }
-			else if (screen == 3)
-			{
+            else if (screen == 3)
+            {
                 Console.Write("                                                                                ");
                 Console.Write("                                                                                ");
                 Console.Write("    ___  ___  ___  ___          ________  ___  ___                              ");
@@ -129,24 +129,24 @@ namespace Seting_DOS.TextUI
                 Console.Write("                                                                                ");
                 Console.Write("                                                                              ");
             }
-			#endregion
-			#region Write reason
-			Cosmos.System.PCSpeaker.Beep();
+            #endregion
+            #region Write reason
+            Cosmos.System.PCSpeaker.Beep();
             Console.SetCursorPosition(17, y2);
             Console.Write(EnvVars.kernelVer);
             Console.SetCursorPosition(17, y2 + 1);
             Console.Write(EnvVars.shortversion);
             Console.SetCursorPosition(9, y);
-			Console.Write(crash.Message);
-			#endregion
-			#region Reboot
-			ConsoleKeyInfo key = Console.ReadKey();
-			if (key.Key == ConsoleKey.R) { }
-			else { Cosmos.Core.CPU.Reboot(); }
-			#endregion
-		}
-		public static void KernelCrash(Exception crash)
-		{
+            Console.Write(crash.Message);
+            #endregion
+            #region Reboot
+            ConsoleKeyInfo key = Console.ReadKey();
+            if (key.Key == ConsoleKey.R) { }
+            else { Cosmos.Core.CPU.Reboot(); }
+            #endregion
+        }
+        public static void KernelCrash(Exception crash)
+        {
             #region UI
             int screen = rnd.Next(1, 4);
             int y = 11;
@@ -167,8 +167,8 @@ namespace Seting_DOS.TextUI
                 y2 = 17;
             }
             Console.BackgroundColor = ConsoleColor.Blue;
-			Console.ForegroundColor = ConsoleColor.White;
-			Console.Clear();
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Clear();
             if (screen == 1)
             {
                 Console.Write("                                                                                ");
@@ -253,20 +253,20 @@ namespace Seting_DOS.TextUI
                 Console.Write("                                                                                ");
                 Console.Write("                                                                              ");
             }
-			#endregion
-			#region Write reason
-			Cosmos.System.PCSpeaker.Beep();
+            #endregion
+            #region Write reason
+            Cosmos.System.PCSpeaker.Beep();
             Console.SetCursorPosition(17, y2);
             Console.Write(EnvVars.kernelVer);
             Console.SetCursorPosition(17, y2 + 1);
             Console.Write(EnvVars.shortversion);
             Console.SetCursorPosition(9, y);
-			Console.Write(crash.Message);
-			#endregion
-			#region Reboot
-			Console.ReadKey();
-			Cosmos.Core.CPU.Reboot();
-			#endregion
-		}
-	}
+            Console.Write(crash.Message);
+            #endregion
+            #region Reboot
+            Console.ReadKey();
+            Cosmos.Core.CPU.Reboot();
+            #endregion
+        }
+    }
 }

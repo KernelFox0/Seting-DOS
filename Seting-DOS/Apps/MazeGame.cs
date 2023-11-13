@@ -1,5 +1,5 @@
 ﻿/// 
-/// Basic maze game, Last modified: 2023. 07. 30.
+/// Basic maze game, Last modified: 2023. 07. 31.
 /// Game version: v1.0
 /// 
 /// Copyright (C) 2023
@@ -191,7 +191,8 @@ namespace Seting_DOS.Apps
 				Console.Write(EnvVars.versionstring);
 				Console.SetCursorPosition(4, 11);
 				TUIBGCol.Set();
-				file = Console.ReadLine();
+                Console.ForegroundColor = ConsoleColor.White;
+                file = Console.ReadLine();
 				if (file == "") { Start(); return; }
 				else if (!file.StartsWith("/")) { file = "/0/Users/" + EnvVars.username + "/AppData/MazeGame/" + file; }
 				if (!File.Exists(file))

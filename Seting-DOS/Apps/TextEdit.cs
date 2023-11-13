@@ -1,5 +1,5 @@
 ﻿/// 
-/// Seting-DOS Text Editor, Last modified: 2023. 07. 30.
+/// Seting-DOS Text Editor, Last modified: 2023. 08. 24.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -13,6 +13,7 @@
 /// You should have received a copy of the GNU General Public License along with Seting-DOS. If not, see <https://www.gnu.org/licenses/>.
 /// 
 
+using Microsoft.VisualBasic;
 using Seting_DOS.Drivers;
 using Seting_DOS.Services;
 using System;
@@ -24,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace Seting_DOS.Apps
 {
-	public static class TextEditTEMP
+    public static class TextEdit
 	{
 		public static string savedPath = "/0/unknown.txt";
 		public static string fileType = "File Not Saved";
@@ -36,20 +37,26 @@ namespace Seting_DOS.Apps
 		public const int maxPLines = 23;
 		public static Dictionary<int, string> lineBuffer = new Dictionary<int, string>();
 		public static Dictionary<int, string> pageData = new Dictionary<int, string>();
+		public static bool open = true;
+		public static string tempText = "";
 		public static void StartApp(string path = null)
 		{
-			EmptyPage();
+			tempText = "";
+			open = true;
 			if (path == null)
 			{
 				NoSaveError();
+				return;
 			}
 			if (!path.StartsWith("/"))
 			{
 				path = "/0/Users/" + EnvVars.username + "/Documents/" + path;
 			}
-			savedPath = VSFS.ToRelPath(path);
 			try
 			{
+				savedPath = VSFS.ToRelPath(path);
+				fileType = FileTypes.GiveTypeOwO(VSFS.GetFileExtension(savedPath));
+				EmptyPage();
 				if (File.Exists(savedPath))
 				{
 					LoadFile();
@@ -63,13 +70,14 @@ namespace Seting_DOS.Apps
 			catch (Exception)
 			{
 				NoSaveError();
+				return;
 			}
 			try
 			{
-				Handle();
+				if (open) { Handle(); }
 				return;
 			}
-			catch (Exception ex) { TextUI.CrashUI.ApplicationCrash(ex); }
+			catch (Exception ex) { CrashUI.ApplicationCrash(ex); }
 		}
 		public static void NoSaveError()
 		{
@@ -109,7 +117,7 @@ namespace Seting_DOS.Apps
 			Console.SetCursorPosition(3, 6);
 			Beep.Sound.Error();
 			string name = Console.ReadLine();
-			if (name.Replace(" ", "") == "") { Exit(); }
+			if (name.Replace(" ", "") == "") { Exit(); return; }
 			else { StartApp(name); }
 		}
 		public static void EmptyPage()
@@ -158,42 +166,68 @@ namespace Seting_DOS.Apps
 		}
 		public static void LoadFile()
 		{
-			string path = VSFS.ToRelPath(savedPath);
-			StreamReader doc = new(path);
-			string raw = doc.ReadToEnd();
-			string result = raw.Replace("\r", "\n");
-			int buffer = 0;
-			int lineNum = 1;
-			string bufferStr = "";
-			foreach (char c in result)
+			try
 			{
-				charCount++;
-				buffer++;
-				if (c != '\n') { bufferStr = bufferStr + c; }
-				if (c == '\n' || buffer > 79)
+				string path = savedPath;
+				StreamReader doc = new(path);
+				string result = doc.ReadToEnd().ReplaceLineEndings("\n");
+				int buffer = 0;
+				int lineNum = 0;
+				pages = 0;
+				string bufferStr = "";
+				foreach (char c in result.ToCharArray())
 				{
-					lineBuffer.Add(lineNum, bufferStr);
-					lineNum++;
-					bufferStr = "";
-					buffer = 0;
-				}
-				if (lineBuffer.Count > maxPLines)
-				{
-					string data = "";
-					for (int i = 1; i <= maxPLines; i++)
+					charCount++;
+					buffer++;
+					if (c != '\n') { bufferStr = bufferStr + c; }
+					if (c == '\n' || buffer > 79)
 					{
-						data = lineBuffer[i];
-						if (i < maxPLines) { data = data + "\n"; }
+						lineNum++;
+						lineBuffer.Add(lineNum, bufferStr);
+						bufferStr = "";
+						buffer = 0;
 					}
-					pageData.Add(pages, data);
-					pages++;
-					bufferStr = "";
-					buffer = 0;
-					lineNum = 1;
-					lineBuffer.Clear();
+					if (lineBuffer.Count >= maxPLines)
+					{
+                        string data = "";
+						for (int i = 1; i <= lineBuffer.Count; i++)
+						{
+							data += lineBuffer[i];
+							if (i < lineBuffer.Count) { data = data + "\n"; }
+						}
+                        pages++;
+						pageData.Add(pages, data);
+						bufferStr = "";
+						buffer = 0;
+						lineNum = 0;
+						lineBuffer.Clear();
+                    }
 				}
+				lineBuffer.Add(lineNum + 1, bufferStr);
+				string data_ = "";
+				for (int i = 1; i <= lineBuffer.Count; i++)
+				{
+					data_ += lineBuffer[i];
+					if (i < lineBuffer.Count) { data_ = data_ + "\n"; }
+				}
+				tempText = lineBuffer[lineBuffer.Count];
+				pages++;
+				pageData.Add(pages, data_);
+				lineBuffer.Clear();
+				currentPage = pages;
+				LoadPage();
+				pageData.Remove(currentPage);
+				lineBuffer.Remove(lineBuffer.Count);
 			}
-			LoadPage();
+			catch (Exception e)
+			{
+				Console.Clear();
+				Console.BackgroundColor = ConsoleColor.Black;
+				Console.ForegroundColor = ConsoleColor.White;
+				Messages.Error("Loading failed: " + e.Message + "\nDetails:\nRead pages: " + pageData.Count + "\nRead lines on current page: "
+					+ lineBuffer.Count + "\nPages: " + pages + "\nCurrent page: " + currentPage);
+				open = false; return;
+			}
 		}
 		public static void LoadPage()
 		{
@@ -207,18 +241,15 @@ namespace Seting_DOS.Apps
 			string data = pageData[currentPage];
 			int count = 0;
 			lines = 1;
+			string last = data.Replace("\n", "");
 			string lineData = "";
-			foreach (char c in data)
+			foreach (char c in data.ToCharArray())
 			{
 				if (count >= 80 || c == '\n')
 				{
 					lineBuffer.Add(lines, lineData);
-					while (lineBuffer[lines] != lineData)
-					{
-						lineBuffer.Remove(lines);
-						lineBuffer.Add(lines, lineData);
-					}
 					lines++;
+					last = last.Remove(0, lineData.Length);
 					count = 0;
 					lineData = "";
 				}
@@ -228,7 +259,8 @@ namespace Seting_DOS.Apps
 					count++;
 				}
 			}
-			lines = lineData.Count();
+			lineBuffer.Add(lines, last);
+			lines = lineBuffer.Count();
 			currentLine = lines;
 		}
 		public static void Load()
@@ -247,7 +279,7 @@ namespace Seting_DOS.Apps
 			Console.Write(@"  |_____|                                                                       ");
 			Console.Write(@"  Specify path of file. If only file name is added it will be loaded from your  ");
 			Console.Write(@"  Documents folder from your user directory. Don't enter anything to exit.      ");
-			Console.Write(@"  he menu.                                                                      ");
+			Console.Write(@"                                                                                ");
 			Console.Write(@"                                                                                ");
 			Console.Write(@"  Path:                                                                         ");
 			Console.Write(@"  [                                                                             ");
@@ -268,15 +300,15 @@ namespace Seting_DOS.Apps
 			Console.Write(EnvVars.versionstring);
 			Console.SetCursorPosition(4, 11);
 			TUIBGCol.Set();
+			Console.ForegroundColor = ConsoleColor.White;
 			savedPath = Console.ReadLine();
 			if (savedPath == "")
 			{
-				Console.BackgroundColor = ConsoleColor.Black;
-				Console.ForegroundColor = ConsoleColor.White;
-				Console.Clear();
+				Exit();
 				return;
 			}
 			else if (!savedPath.StartsWith("/")) { savedPath = "/0/Users/" + EnvVars.username + "/Documents/" + savedPath; }
+			savedPath = VSFS.ToRelPath(savedPath);
 			if (!File.Exists(savedPath))
 			{
 				Console.SetCursorPosition(2, 9);
@@ -298,15 +330,26 @@ namespace Seting_DOS.Apps
 		public static void Handle()
 		{
 			ConsoleKeyInfo p;
-			string text = "";
+			string text = tempText;
 			while (true)
 			{
 				int x = text.Length;
 				int y = Console.GetCursorPosition().Top;
 				Console.SetCursorPosition(x, y);
-				p = Console.ReadKey();
+				p = Console.ReadKey(true);
 				if (p.Key == ConsoleKey.PageUp)
 				{
+					if (pages == currentPage)
+					{
+						string data = "";
+						lineBuffer.Add(currentLine, text);
+						for (int i = 1; i <= lines; i++)
+						{
+							data = data + lineBuffer[i];
+							if (i < lines) { data = data + "\n"; }
+						}
+						pageData.Add(currentPage, data);
+					}
 					if (currentPage > 1)
 					{
 						currentPage--;
@@ -330,9 +373,12 @@ namespace Seting_DOS.Apps
 						LoadPage();
 						try
 						{
-							string temp = lineBuffer.Values.Last();
-							text = temp;
+							text = lineBuffer.Values.Last();
 							lineBuffer.Remove(lineBuffer.Count);
+							if (pages == currentPage)
+							{
+								pageData.Remove(currentPage);
+							}
 						}
 						catch (Exception)
 						{
@@ -343,16 +389,12 @@ namespace Seting_DOS.Apps
 				else if (p.Modifiers == ConsoleModifiers.Control && p.Key == ConsoleKey.S)
 				{
 					StreamWriter file = new(savedPath);
-					/*string lastPage = pageData[pages];
-					pageData.Remove(pages);
-					lastPage = lastPage + "\n" + text;
-					pageData.Add(pages, lastPage);*/
 					string lineData = "";
 					lineBuffer.Add(currentLine, text);
-					for (int i = 1; i <= maxPLines; i++)
+					for (int i = 1; i <= lines; i++)
 					{
 						lineData = lineData + lineBuffer[i];
-						if (i < maxPLines) { lineData = lineData + "\n"; }
+						if (i < lines) { lineData = lineData + "\n"; }
 					}
 					pageData.Add(pages, lineData);
 					string data = "";
@@ -404,9 +446,9 @@ namespace Seting_DOS.Apps
 							currentLine--;
 							if (text.Length > 79)
 							{
-								Console.SetCursorPosition(text.Length, y - 1);
+								Console.SetCursorPosition(text.Length - 1, y - 1);
 								Console.Write(" ");
-								Console.SetCursorPosition(text.Length, y - 1);
+								Console.SetCursorPosition(text.Length - 1, y - 1);
 								text = text.Remove(text.Length - 1, 1);
 							}
 							else
@@ -421,17 +463,16 @@ namespace Seting_DOS.Apps
 							lineBuffer.Clear();
 							pages--;
 							currentPage--;
-							LoadToLineBuffer();
-							text = lineBuffer.Values.Last();
+							charCount--;
+							LoadPage();
+							pageData.Remove(pageData.Count);
+							text = lineBuffer[currentLine];
 							if (text.Length >= 80)
 							{
 								text = text.Remove(text.Length - 1, 1);
-                                lineBuffer.Remove(lineBuffer.Count);
-								lineBuffer.Add(lineBuffer.Count + 1, text);
-                            }
-							LoadPage();
-                            lineBuffer.Remove(lineBuffer.Count);
-                        }
+							}
+							lineBuffer.Remove(lineBuffer.Count);
+						}
 					}
 					else if (p.Key == ConsoleKey.Enter)
 					{
@@ -444,9 +485,10 @@ namespace Seting_DOS.Apps
 					}
 					else
 					{
+						Console.Write(p.KeyChar);
 						text = text + p.KeyChar;
 						charCount++;
-						if (text.Length >= 80)
+						if (text.Length >= 80 || (text.Length >= 79 & currentLine == maxPLines))
 						{
 							lineBuffer.Add(currentLine, text);
 							text = "";
@@ -493,7 +535,6 @@ namespace Seting_DOS.Apps
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.Clear();
 			Console.SetCursorPosition(0, 0);
-
 			savedPath = "/0/unknown.txt";
 			fileType = "File Not Saved";
 			pages = 1;

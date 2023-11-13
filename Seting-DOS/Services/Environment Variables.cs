@@ -1,5 +1,5 @@
 ﻿/// 
-/// File for storing environment variables, Last modified: 2023. 07. 30.
+/// File for storing environment variables, Last modified: 2023. 11. 13.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -20,15 +20,15 @@ namespace Seting_DOS.Services
 	public static class EnvVars
 	{
 		public static string username = "unknown";
-		public static string userFolder = "unknown";
 		public static string hostname = "unknown";
 		public static string theme = "classic";
 		public static bool mute = false;
 
 		public static bool verboseMode = false;
+        public static bool debugBoot = false;
 		public static bool hasPassword = false;
-		public const string versionstring = "Seting-DOS Unreleased Alpha 0.1 Work In Progress, Codename: OwO";
-		public static string shortversion = "Seting-DOS OwO UA WIP 0.1";
+		public const string versionstring = "Seting-DOS Beta 1.0";
+		public const string shortversion = "Seting-DOS b1.0";
 		public const string kernelVer = "Cosmos Dev Kit Commit 189f4e1";
 
 
@@ -44,13 +44,14 @@ namespace Seting_DOS.Services
 		public static void WriteThem() //Write environment variables to terminal
         {
 			Write("static string", "username", username);
-            Write("static string", "userFolder", userFolder);
             Write("static string", "hostname", hostname);
             Write("static string", "theme", theme);
             Write("static bool", "mute", mute.ToString());
             Write("static bool", "verboseMode", verboseMode.ToString());
+            Write("static bool", "debugBoot", debugBoot.ToString());
             Write("static bool", "hasPassword", hasPassword.ToString());
             Write("const string", "versionstring", versionstring);
+            Write("const string", "shortversion", shortversion);
             Write("const string", "kernelVer", kernelVer);
         }
 	}

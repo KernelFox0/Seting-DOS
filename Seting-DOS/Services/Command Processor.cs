@@ -1,5 +1,5 @@
 ﻿/// 
-/// Command handler, Last modified: 2023. 07. 30.
+/// Command handler, Last modified: 2023. 11. 13.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -17,7 +17,6 @@ using System;
 using System.IO;
 using Seting_DOS.Apps;
 using Seting_DOS.Drivers;
-using Seting_DOS.TextUI;
 using System.Collections.Generic;
 
 namespace Seting_DOS.Services
@@ -36,7 +35,7 @@ namespace Seting_DOS.Services
 			}
 			string[] args = tempArgs.ToArray();
 			#endregion
-			#region Easter eggs. Find them normally, don't look inside
+			#region Easter eggs. Find them, don't look inside
 			if (command == "OwO")
 			{
 				Console.WriteLine("OwO UwU :3");
@@ -81,12 +80,45 @@ namespace Seting_DOS.Services
 			#region Filesystem related commands
 			else if (cmd == "reset")
 			{
+				Console.ForegroundColor = ConsoleColor.Yellow;
+				Console.Write("Are you sure? This will delete your data! [Y/N]: ");
+				Console.ForegroundColor = ConsoleColor.White;
+				ConsoleKeyInfo key = Console.ReadKey(); Console.Write("\n");
+				if (key.Key != ConsoleKey.Y) { return; }
+				if (EnvVars.hasPassword)
+				{
+					StreamReader p = new StreamReader(@"0:\Users\" + EnvVars.username + "\\password.pwd");
+					string password = p.ReadToEnd();
+					p.Close();
+					Console.Write("Enter your password: ");
+					string pass = Console.ReadLine();
+					if (pass != password) { return; }
+				}
+				Console.ForegroundColor = ConsoleColor.Red;
+				Console.Write("Are you really sure? This is not reversible! [Y/N]: ");
+				Console.ForegroundColor = ConsoleColor.White;
+				key = Console.ReadKey(); Console.Write("\n");
+				if (key.Key != ConsoleKey.Y) { return; }
+				Console.WriteLine("Deleting data...");
 				File.Delete(@"0:\SDOS\System\installed.idp");
-				Process("reboot");
+				try { VSFS.EmptyRootPartition(); }
+				catch (Exception e)
+				{
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.WriteLine("Error while deleting data! After restarting make sure to choose Format because\n otherwise the install process can fail!\nError message: {0}", e.Message);
+				}
+				Console.ForegroundColor = ConsoleColor.Green;
+				Beep.PCBeep(500);
+				Beep.PCBeep(300);
+				Console.Write("Done. Press any key to restart...");
+				Console.ReadKey();
+				Cosmos.System.Power.Reboot();
 			}
 			else if (cmd == "dir" || cmd == "ls")
 			{
-				VSFS.ListContent();
+				if (args.Length == 0 || args[0] == ".") { VSFS.ListContent(); }
+				else if (args[0] == "..") { VSFS.ListContent(".."); }
+				else { string path = args[0]; if (!path.StartsWith("/")) { path = VSFS.act_dir + path; } VSFS.ListContent(VSFS.ToRelPath(path)); }
 			}
 			else if (cmd == "cd..") { VSFS.ChangeDir(".."); }
 			else if (cmd == "cd")
@@ -144,7 +176,7 @@ namespace Seting_DOS.Services
 					else { VSFS.RemoveFile(args[0]); }
 				}
 			}
-			else if (cmd == "copy")
+			else if (cmd == "copy" || cmd == "cp")
 			{
 				if (args.Length == 0)
 				{
@@ -159,7 +191,7 @@ namespace Seting_DOS.Services
 					VSFS.Copy(args[0], args[1]);
 				}
 			}
-			else if (cmd == "move")
+			else if (cmd == "move" || cmd == "mv")
 			{
 				if (args.Length == 0)
 				{
@@ -171,10 +203,10 @@ namespace Seting_DOS.Services
 				}
 				else
 				{
-					//No move command yet :3
+					VSFS.Move(args[0], args[1]);
 				}
 			}
-			else if (cmd == "ren")
+			else if (cmd == "ren" || cmd == "rename")
 			{
 				if (args.Length == 0)
 				{
@@ -186,10 +218,10 @@ namespace Seting_DOS.Services
 				}
 				else
 				{
-					//No rename command yet :3
+					VSFS.Rename(args[0], args[1]);
 				}
 			}
-			else if (cmd == "cat" || cmd == "type")
+			else if (cmd == "cat" || cmd == "type" || cmd == "read")
 			{
 				if (args.Length == 0)
 				{
@@ -222,6 +254,71 @@ namespace Seting_DOS.Services
 			}
 			#endregion
 			#region System commands
+			else if (cmd == "alias")
+			{
+				if (args.Length < 1 || args.Length > 3)
+				{
+					Messages.Error("Insufficient number or arguments!\nProper format: alias [ -s | -r ] <alias> [<command>]");
+				}
+				else if (args[0] == "-r")
+				{
+					if (args.Length != 2)
+					{
+						Messages.Error("Insufficient number or arguments!\nProper format: alias -r <alias>");
+					}
+					else
+					{
+						AliasManager.Delete(args[1]);
+					}
+				}
+				else if (args[0] == "-s")
+				{
+					if (args[1] == "-r")
+					{
+						if (args.Length != 3)
+						{
+							Messages.Error("Insufficient number or arguments!\nProper format: alias -s -r <alias>");
+						}
+						else
+						{
+							AliasManager.Delete(args[2], true);
+						}
+					}
+					else if (args.Length == 3)
+					{
+						AliasManager.Create(args[1], args[2], true);
+					}
+					else
+					{
+						Messages.Error("Insufficient number or arguments!\nProper format: alias -s [-r] <alias> [<command>]");
+					}
+				}
+				else if (args[0] == "-e")
+				{
+					if (args.Length < 2) { Console.WriteLine("List of alias manager extra commands:\nreload - reloads aliases from file\nlist - print out the contents of the alias container\n\nSyntax: alias -e [option]"); }
+					else if (args[1] == "reload")
+					{
+						AliasManager.Load();
+					}
+					else if (args[1] == "list")
+					{
+						string[] list = AliasManager.List();
+						Console.ForegroundColor = ConsoleColor.Green;
+						Console.WriteLine("System aliases:");
+						Console.ForegroundColor = ConsoleColor.White;
+						Console.WriteLine(list[0]);
+						Console.ForegroundColor = ConsoleColor.Green;
+						Console.WriteLine("User aliases:");
+						Console.ForegroundColor = ConsoleColor.White;
+						Console.WriteLine(list[1]);
+					}
+					else { Messages.Error("Unknown extra! Type alias -e for a list of extras."); }
+				}
+				else
+				{
+					AliasManager.Create(args[0], args[1]);
+				}
+			}
 			else if (cmd == "clr" || cmd == "cls" || cmd == "clear")
 			{
 				Console.Clear();
@@ -267,16 +364,56 @@ namespace Seting_DOS.Services
 			{
 				VSFS.Zerosix(true);
 			}
-			else if (cmd == "cmdhistory")
+			else if (cmd == "cmdhistory" || cmd == "history")
 			{
 				CommandHistoryManager.PrintAll();
 			}
-			else if (cmd == "debug")
+			else if (cmd == "license")
 			{
-				Console.WriteLine("Debug command recieved!");
-				if (args.Length > 0) { TextEditTEMP.StartApp(args[0]); }
-				else { TextEditTEMP.StartApp(); }
-				//Console.WriteLine("No new test feature... OwO");
+				if (args.Length == 0) { TextEdit.StartApp("/0/SDOS/etc/license.txt"); }
+				else if (args[0] == "show")
+				{
+					if (args.Length == 1) { Messages.Error("Missing parameter! Use show c or show w!"); }
+					else if (args[1] == "w")
+					{
+						Console.Write("Disclaimer of Warranty:\n\nTHERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW." +
+							" EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES" +
+							" PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR" +
+							" IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND" +
+							" FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE" +
+							" OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE" +
+							" COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n");
+					}
+					else if (args[1] == "c")
+					{
+						Console.Write("You may convey a work based on the Program, or the modifications to produce it from the Program, in the form of" +
+							" source code under the terms of section 4, provided that you also meet all of these conditions:" +
+							"\n\n- a) The work must carry prominent notices stating that you modified it, and giving a relevant date." +
+							"\n- b) The work must carry prominent notices stating that it is released under this License and any conditions added" +
+							" under section 7. This requirement modifies the requirement in section 4 to “keep intact all notices”." +
+							"\n- c) You must license the entire work, as a whole, under this License to anyone who comes into possession of a" +
+							"copy. This License will therefore apply, along with any applicable section 7 additional terms, to the whole of the work, and all its parts, regardless of how they are packaged.\n"); Console.ReadKey();
+							Console.Write(" This License gives no permission to license the work" +
+							" in any other way, but it does not invalidate such permission if you have separately received it." +
+							" - d) If the work has interactive user interfaces, each must display Appropriate Legal Notices; however, if the" +
+							" Program has interactive interfaces that do not display Appropriate Legal Notices, your work need not make them\ndo so." +
+							"\n\nA compilation of a covered work with other separate and independent works, which are not by their nature extensions" +
+							" of the covered work, and which are not combined with it such as to form a larger program, in or on a volume of a" +
+							" storage or distribution medium, is called an “aggregate” if the compilation and its resulting copyright are not used to" +
+							" limit the access or legal rights of the compilation's users beyond what the individual works permit. Inclusion of a" +
+							" covered work in an aggregate does not cause this License to apply to the other parts of the aggregate.\n");
+					}
+				}
+				else { TextEdit.StartApp("/0/SDOS/etc/license.txt"); }
+			}
+			else if (cmd == "help")
+			{
+				TextEdit.StartApp("/0/SDOS/etc/help.txt");
+			}
+			else if (cmd == "preferences" || cmd == "prefs" || cmd == "settings")
+			{
+				PreferencesEditor.StartApp();
+				Console.BackgroundColor = ConsoleColor.Black; Console.ForegroundColor = ConsoleColor.White; Console.Clear();
 			}
 			#endregion
 			#region Applications
@@ -304,18 +441,15 @@ namespace Seting_DOS.Services
 					BeepMusicPlayer.MusicPlayer(path);
 				}
 			}
-			else if (cmd == "edit")
+			else if (cmd == "edit" || cmd == "textedit" || cmd == "notepad")
 			{
-				if (args.Length == 0)
-				{
-					Messages.Error("Error: Missing parameter: File name");
-				}
-				else
+				if (args.Length > 0)
 				{
 					string path = args[0];
-					if (!path.StartsWith("/0/")) { path = VSFS.act_dir + path; }
-					TextEditOLD.Start(VSFS.ToRelPath(path));
+					if (!path.StartsWith("/")) { path = VSFS.act_dir + path; }
+					TextEdit.StartApp(path);
 				}
+				else { TextEdit.StartApp(); }
 			}
 			else if (cmd == "maze" || cmd == "mazegame")
 			{
@@ -329,8 +463,18 @@ namespace Seting_DOS.Services
 			#region Alias test, incorrect operation message
 			else
 			{
-				//Aliases are not supported yet :3
-				if (cmd != "") { Messages.Custom("'" + cmd + "' is not a valid command!", ConsoleColor.Red); }
+				string alias = AliasManager.GetCmd(cmd);
+				if (alias.Replace(" ", "") == "") { alias = cmd; }
+				if (alias != cmd && cmd != "")
+				{
+					string aliasCmd = alias;
+					for (int i = 0; i < args.Length; i++)
+					{
+						aliasCmd = aliasCmd + " " + args[i];
+					}
+					Process(aliasCmd);
+				}
+				else if (cmd != "") { Messages.Custom("'" + cmd + "' is not a valid command!", ConsoleColor.Red); }
 			}
 			#endregion
 		}

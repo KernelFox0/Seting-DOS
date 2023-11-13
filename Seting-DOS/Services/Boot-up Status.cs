@@ -1,5 +1,5 @@
 ﻿/// 
-/// Load status message, mainly used on boot while loading drivers, Last modified: 2023. 07. 30.
+/// Load status message, mainly used on boot while loading drivers, Last modified: 2023. 11. 13.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -29,15 +29,16 @@ namespace Seting_DOS.Services
 {
     public static class BootMSG
     {
-        public static void Write(string[] msg) //Writes bootup status messages to the screen
+        public static void Write(string[] msg, bool force = false) //Writes bootup status messages to the screen
         {
             /* done: OK; Driver loaded
              * info: INFO; Driver loaded but has a message
              * warning: WARN; Driver partially loaded, had an error
              * error: ERROR; Driver not loaded
              */
-            if (EnvVars.verboseMode)
+            if (EnvVars.verboseMode || force)
             {
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("[");
                 if (msg[0] == "done") { Console.ForegroundColor = ConsoleColor.Green; Console.Write("OK"); }
                 else if (msg[0] == "info") { Console.ForegroundColor = ConsoleColor.Blue; Console.Write("INFO"); }

@@ -1,5 +1,5 @@
 ﻿/// 
-/// PCSpeaker Beep driver, Last modified: 2023. 07. 30.
+/// PCSpeaker Beep driver, Last modified: 2023. 08. 11.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -124,7 +124,7 @@ namespace Seting_DOS.Drivers
 		public static void PCBeep(uint note, uint duration = 0) //Beep function
         {
 			if (note < 37 || note > 32767) { return; } //If frequency is out of the supported range do nothing
-			if (duration == 0) { PCSpeaker.Beep(note, 1); } //If duration is 0 do not play sound (It wouldn't do anything)
+			if (duration == 0) { PCSpeaker.Beep(note, 1); }
 			else { PCSpeaker.Beep(note, duration); } //Play the sound
         }
 	}

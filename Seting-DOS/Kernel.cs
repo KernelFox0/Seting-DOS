@@ -1,5 +1,5 @@
 ﻿/// 
-/// COSMOS kernel, boot process, terminal and crash handler, Last modified: 2023. 07. 30.
+/// COSMOS kernel, boot process, terminal and crash handler, Last modified: 2023. 08. 01.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -17,11 +17,10 @@ using System;
 using Sys = Cosmos.System;
 using Seting_DOS.Services;
 using Seting_DOS.Apps;
-using Seting_DOS.TextUI;
 
 namespace Seting_DOS
 {
-	public class Kernel : Sys.Kernel
+    public class Kernel : Sys.Kernel
 	{
 
 		protected override void BeforeRun() //Code the kernel executes at boot
@@ -33,9 +32,10 @@ namespace Seting_DOS
             catch (Exception ex)
             {
 				CrashUI.KernelCrash(ex);
+				_ = !false;
+				//It's funny because it's true
             }
 		}
-
 		protected override void Run() //Main loop
 		{
 			try

@@ -19,7 +19,7 @@ using Seting_DOS.Apps;
 
 namespace Seting_DOS.Drivers
 {
-	public static class Keyboard
+    public static class Keyboard
 	{
 		public static string[] Load()
 		{
@@ -80,7 +80,7 @@ namespace Seting_DOS.Drivers
 				}
 				else if (p.Key == ConsoleKey.F9)
 				{
-					TextUI.LogonUI.LockScreen();
+					LogonUI.LockScreen();
 				}
 				else if (p.Key == ConsoleKey.F1)
 				{
