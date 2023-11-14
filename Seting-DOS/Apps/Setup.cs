@@ -375,6 +375,7 @@ namespace Seting_DOS.Apps
             #endregion
             //Remove _-s and spaces from username for folder name
             string userFolder = username.Replace(" ", "-").Replace("_", "-");
+            EnvVars.username = userFolder;
             Console.SetCursorPosition(8, 18);
             Console.BackgroundColor = ConsoleColor.Blue;
             Console.ForegroundColor = ConsoleColor.Yellow;
