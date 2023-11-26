@@ -1,5 +1,5 @@
 ﻿/// 
-/// Preferences editor app, Last modified: 2023. 11. 13.
+/// Preferences editor app, Last modified: 2023. 11. 26.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Seting_DOS.Services;
 using Seting_DOS.Drivers;
 using System.IO;
+using System.Xml.Linq;
 
 namespace Seting_DOS.Apps
 {
@@ -73,9 +74,9 @@ namespace Seting_DOS.Apps
 				if (selection == 0)
 				{
 					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
-					Console.SetCursorPosition(11, 16);
+					Console.SetCursorPosition(11, 15);
 					Console.WriteLine("User Settings");
-					Console.SetCursorPosition(11, 10);
+					Console.SetCursorPosition(11, 9);
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
 					Console.WriteLine("System Settings");
 				}
@@ -83,13 +84,13 @@ namespace Seting_DOS.Apps
 				{
 
 					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
-					Console.SetCursorPosition(11, 10);
+					Console.SetCursorPosition(11, 9);
 					Console.WriteLine("System Settings");
-					Console.SetCursorPosition(11, 16);
+					Console.SetCursorPosition(11, 15);
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
 					Console.WriteLine("User Settings");
 				}
-				key = Console.ReadKey();
+				key = Console.ReadKey(true);
 				if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.DownArrow)
 				{
 					switch (selection)
@@ -146,8 +147,8 @@ namespace Seting_DOS.Apps
 				Console.Write(@"   Debug boot: [ ]                                                              ");
 				Console.Write(@"   Pauses boot after it's complete. Only works with verbose boot enabled.       ");
 				Console.Write(@"                                                                                ");
-				Console.Write(@"   Changing computer name is not yet implemented.                               ");
-				Console.Write(@"   It will get added in the next version.                                       ");
+				Console.Write(@"   Change computer name: x                                                      ");
+				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
@@ -170,40 +171,62 @@ namespace Seting_DOS.Apps
 				if (EnvVars.debugBoot) { Console.BackgroundColor = ConsoleColor.Green; Console.Write(" "); }
 				else { TUIBGCol.Set(); Console.Write(" "); }
 				TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
+				Console.SetCursorPosition(25, 17);
+				Console.Write(EnvVars.hostname);
 				if (selection == 0)
 				{
 					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
 					Console.SetCursorPosition(3, 11);
-					Console.WriteLine("Verbose boot:");
+					Console.Write("Verbose boot:");
 					Console.SetCursorPosition(3, 14);
-					Console.WriteLine("Debug boot:");
+					Console.Write("Debug boot:");
+					Console.SetCursorPosition(3, 17);
+					Console.Write("Change computer name:");
 					Console.SetCursorPosition(3, 8);
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
-					Console.WriteLine("Theme:");
+					Console.Write("Theme:");
 				}
 				else if (selection == 1)
 				{
 					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
 					Console.SetCursorPosition(3, 8);
-					Console.WriteLine("Theme:");
+					Console.Write("Theme:");
 					Console.SetCursorPosition(3, 14);
-					Console.WriteLine("Debug boot:");
+					Console.Write("Debug boot:");
+					Console.SetCursorPosition(3, 17);
+					Console.Write("Change computer name:");
 					Console.SetCursorPosition(3, 11);
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
-					Console.WriteLine("Verbose boot:");
+					Console.Write("Verbose boot:");
+				}
+				else if (selection == 2)
+				{
+					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 11);
+					Console.Write("Verbose boot:");
+					Console.SetCursorPosition(3, 8);
+					Console.Write("Theme:");
+					Console.SetCursorPosition(3, 17);
+					Console.Write("Change computer name:");
+					Console.SetCursorPosition(3, 14);
+					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.Write("Debug Boot:");
 				}
 				else
 				{
 					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
 					Console.SetCursorPosition(3, 11);
-					Console.WriteLine("Verbose boot:");
+					Console.Write("Verbose boot:");
 					Console.SetCursorPosition(3, 8);
-					Console.WriteLine("Theme:");
+					Console.Write("Theme:");
 					Console.SetCursorPosition(3, 14);
+					Console.Write("Debug Boot:");
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
-					Console.WriteLine("Debug Boot:");
+					Console.SetCursorPosition(3, 17);
+					Console.Write("Change computer name:");
 				}
-				key = Console.ReadKey();
+				key = Console.ReadKey(true);
+				TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
 				if (key.Key == ConsoleKey.DownArrow)
 				{
 					switch (selection)
@@ -215,6 +238,9 @@ namespace Seting_DOS.Apps
 							selection = 2;
 							break;
 						case 2:
+							selection = 3;
+							break;
+						case 3:
 							selection = 0;
 							break;
 					}
@@ -224,13 +250,16 @@ namespace Seting_DOS.Apps
 					switch (selection)
 					{
 						case 0:
-							selection = 2;
+							selection = 3;
 							break;
 						case 1:
 							selection = 0;
 							break;
 						case 2:
 							selection = 1;
+							break;
+						case 3:
+							selection = 2;
 							break;
 					}
 				}
@@ -266,7 +295,7 @@ namespace Seting_DOS.Apps
 						}
 						vb.Close();
 					}
-					else
+					else if (selection == 2)
 					{
 						StreamWriter db = new StreamWriter(@"0:\SDOS\preferences\debugBoot.pref");
 						if (EnvVars.debugBoot)
@@ -281,6 +310,25 @@ namespace Seting_DOS.Apps
 						}
 						db.Close();
 					}
+					else
+					{
+						Console.SetCursorPosition(25, 17);
+						for (int i = 0; i < EnvVars.hostname.Length; i++)
+						{
+							Console.Write(" ");
+						}
+						Console.SetCursorPosition(25, 17);
+						string newName = Keyboard.KeyHandler(true, false);
+						if (newName.Replace(" ", "") != "") { EnvVars.hostname = newName.Replace(" ", "-"); }
+						if (newName.Replace("-", "") != "")
+						{
+							File.Delete(@"0:\SDOS\preferences\compName.pref");
+							StreamWriter name = new StreamWriter(@"0:\SDOS\preferences\compName.pref");
+							name.Write(newName);
+							name.Close();
+							EnvVars.hostname = newName.Trim('\n');
+						}
+					}
 				}
 				else if (key.Modifiers == ConsoleModifiers.Control && key.Key == ConsoleKey.X)
 				{
@@ -291,6 +339,7 @@ namespace Seting_DOS.Apps
 		}
 		public static void User()
 		{
+			int selection = 0;
 			ConsoleKeyInfo key;
 			while (true)
 			{
@@ -308,16 +357,17 @@ namespace Seting_DOS.Apps
 				Console.Write(@"    |   ( )                                                                     ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
-				Console.Write(@"   Changing username and password is not yet implemented.                       ");
-				Console.Write(@"   They will get added in the next version.                                     ");
+				Console.Write(@"   Change username: x                                                           ");
 				Console.Write(@"                                                                                ");
-				Console.Write(@"   Press Ctrl-X to go back.                                                     ");
+				Console.Write(@"   Remove password                                                              ");
 				Console.Write(@"                                                                                ");
-				Console.Write(@"                                                                                ");
-				Console.Write(@"                                                                                ");
+				Console.Write(@"   Change password                                                              ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
+				Console.Write(@"                                                                                ");
+				Console.Write(@"                                                                                ");
+				/*Console.Write(@"   Manage other accounts (NOT YET IMPLEMENTED)                                  ");*/
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
@@ -331,8 +381,157 @@ namespace Seting_DOS.Apps
 				Console.SetCursorPosition(1, 24);
 				Console.Write(EnvVars.versionstring);
 				TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
-				key = Console.ReadKey();
-				if (key.Modifiers == ConsoleModifiers.Control && key.Key == ConsoleKey.X)
+				Console.SetCursorPosition(20, 8);
+				Console.Write(EnvVars.username);
+				if (selection == 0)
+				{
+					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 10);
+					Console.Write("Remove password");
+					Console.SetCursorPosition(3, 12);
+					Console.Write("Change password");
+					Console.SetCursorPosition(3, 8);
+					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.Write("Change username:");
+				}
+				else if (selection == 1)
+				{
+					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 8);
+					Console.Write("Change username:");
+					Console.SetCursorPosition(3, 12);
+					Console.Write("Change password");
+					Console.SetCursorPosition(3, 10);
+					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.Write("Remove password");
+				}
+				else
+				{
+					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 8);
+					Console.Write("Change username:");
+					Console.SetCursorPosition(3, 10);
+					Console.Write("Remove password");
+					Console.SetCursorPosition(3, 12);
+					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.Write("Change password");
+				}
+				key = Console.ReadKey(true);
+				TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
+				if (key.Key == ConsoleKey.DownArrow)
+				{
+					switch (selection)
+					{
+						case 0:
+							selection = 1;
+							break;
+						case 1:
+							selection = 2;
+							break;
+						case 2:
+							selection = 0;
+							break;
+					}
+				}
+				else if (key.Key == ConsoleKey.UpArrow)
+				{
+					switch (selection)
+					{
+						case 0:
+							selection = 2;
+							break;
+						case 1:
+							selection = 0;
+							break;
+						case 2:
+							selection = 1;
+							break;
+					}
+				}
+				else if (key.Key == ConsoleKey.Enter)
+				{
+					if (selection == 0)
+					{
+						//Change username
+						Console.SetCursorPosition(20, 8);
+						for (int i = 0; i < EnvVars.username.Length; i++) { Console.Write(" "); }
+						Console.SetCursorPosition(20, 8);
+						string name = Console.ReadLine().Trim('\n');
+						if (name.Trim(' ').Trim('_').Trim('-') != "" || name != null)
+						{
+							string userFolder = name.Replace(" ", "-").Replace("_", "-").Trim('\n');
+							File.Delete(@"0:\users\" + EnvVars.username + @"\fullName.dat");
+							StreamWriter fn = new StreamWriter(@"0:\users\" + EnvVars.username + @"\fullName.dat");
+							fn.Write(userFolder);
+							fn.Close();
+							VSFS.cur_dir = "0:\\users\\";
+							VSFS.act_dir = "/0/users/";
+							VSFS.Rename(EnvVars.username, userFolder, true);
+							EnvVars.username = userFolder;
+							Console.SetCursorPosition(3, 9);
+							Console.ForegroundColor = ConsoleColor.Green;
+							Console.Write("User renaming completed! Press any key to restart...");
+							Console.ReadKey();
+							Cosmos.System.Power.Reboot();
+						}
+					}
+					else if (selection == 1)
+					{
+						//Remove password
+						try
+						{
+							File.Delete(@"0:\users\" + EnvVars.username + @"\password.pwd");
+							File.Delete(@"0:\users\" + EnvVars.username + @"\passRem.dat");
+							EnvVars.hasPassword = false;
+						}
+						catch { }
+					}
+					else if (selection == 2)
+					{
+						//Change password
+						Console.SetCursorPosition(3, 14);
+						Console.Write("Repeat password: ");
+						Console.SetCursorPosition(3, 16);
+						Console.Write("Password reminder: ");
+						Console.SetCursorPosition(3, 12);
+						Console.Write("Change password: ");
+						string password = Keyboard.KeyHandler(true, true);
+						string reminder = null;
+						if (password == "" || password == null) { }
+						else
+						{
+							Console.SetCursorPosition(20, 14);
+							string tmp = Keyboard.KeyHandler(true, true);
+							if (password != tmp)
+							{
+								Console.SetCursorPosition(3, 15);
+								Console.ForegroundColor = ConsoleColor.Red;
+								Console.Write("[!] Passwords don't match! Press any key to go back...");
+								Console.ReadKey();
+							}
+							else
+							{
+								Console.SetCursorPosition(22, 16);
+								reminder = Console.ReadLine();
+								try
+								{
+									File.Delete(@"0:\users\" + EnvVars.username + @"\password.pwd");
+									File.Delete(@"0:\users\" + EnvVars.username + @"\passRem.dat");
+									EnvVars.hasPassword = false;
+								}
+								catch { }
+								StreamWriter pwd = new StreamWriter(@"0:\users\" + EnvVars.username + @"\password.pwd");
+								pwd.Write(password);
+								pwd.Close();
+								StreamWriter rem = new StreamWriter(@"0:\users\" + EnvVars.username + @"\passRem.dat");
+								rem.Write(reminder);
+								rem.Close();
+								EnvVars.hasPassword = true;
+							}
+						}
+					}
+				}
+				else if (key.Modifiers == ConsoleModifiers.Control && key.Key == ConsoleKey.X)
 				{
 					break;
 				}

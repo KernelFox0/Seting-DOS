@@ -1,5 +1,5 @@
 ﻿/// 
-/// File for storing environment variables, Last modified: 2023. 11. 13.
+/// File for storing environment variables, Last modified: 2023. 11. 26.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -27,8 +27,8 @@ namespace Seting_DOS.Services
 		public static bool verboseMode = false;
         public static bool debugBoot = false;
 		public static bool hasPassword = false;
-		public const string versionstring = "Seting-DOS Beta 1.0";
-		public const string shortversion = "Seting-DOS b1.0";
+		public const string versionstring = "Seting-DOS Beta 1.0.1";
+		public const string shortversion = "Seting-DOS b1.0.1";
 		public const string kernelVer = "Cosmos Dev Kit Commit 189f4e1";
 
 

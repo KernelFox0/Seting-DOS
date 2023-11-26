@@ -1,5 +1,5 @@
 ﻿/// 
-/// VSFS (Virtual Syntax File System) Driver, Last modified: 2023. 11. 13.
+/// VSFS (Virtual Syntax File System) Driver, Last modified: 2023. 11. 26.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -271,10 +271,10 @@ namespace Seting_DOS.Drivers
 			if (sourceName == "*.*") { multiple = true; }
 			if (!multiple)
 			{
-				if (!sourceName.StartsWith("/0/")) { sourceName = act_dir + sourceName; }
-				if (!targetName.StartsWith("/0/")) { targetName = act_dir + targetName; }
-				sourceName = ToRelPath(sourceName);
-				targetName = ToRelPath(targetName);
+				if (!sourceName.StartsWith("/0/") && !sourceName.StartsWith("0:\\")) { sourceName = act_dir + sourceName; }
+				if (!targetName.StartsWith("/0/") && !targetName.StartsWith("0:\\")) { targetName = act_dir + targetName; }
+				if (!sourceName.StartsWith("0:\\")) { sourceName = ToRelPath(sourceName); }
+				if (!targetName.StartsWith("0:\\")) { targetName = ToRelPath(targetName); }
 			}
 			if (File.Exists(sourceName))
 			{
@@ -289,7 +289,7 @@ namespace Seting_DOS.Drivers
 					Console.Write("\n");
 					Console.ForegroundColor = ConsoleColor.White;
 				}
-				File.Copy(sourceName, targetName);
+				File.Copy(sourceName.ToLower(), targetName.ToLower());
 				if (!noFeedback)
 				{
 					Console.ForegroundColor = ConsoleColor.White;
@@ -302,12 +302,18 @@ namespace Seting_DOS.Drivers
 			else if (sourceName.Contains("*.*"))
 			{
 				sourceName = sourceName.Replace("*.*", "");
-				string[] files = Directory.GetFiles(sourceName);
 				if (File.Exists(targetName)) { targetName = Path.GetDirectoryName(targetName); }
 				if (!targetName.EndsWith("\\")) { targetName = targetName + "\\"; }
+				string[] files = Directory.GetFiles(sourceName);
+				string[] dirs = Directory.GetDirectories(sourceName);
 				foreach (var file in files)
 				{
 					Copy(sourceName + file, targetName + file, noFeedback, true);
+				}
+				foreach (var dir in dirs)
+				{
+					MakeDir(targetName + dir, true, true);
+					Copy(sourceName + dir + "\\*.*", targetName + dir, noFeedback, true);
 				}
 				if (!noFeedback)
 				{
@@ -355,10 +361,10 @@ namespace Seting_DOS.Drivers
 			if (sourceName == "*.*") { multiple = true; }
 			if (!multiple)
 			{
-				if (!sourceName.StartsWith("/0/")) { sourceName = act_dir + sourceName; }
-				if (!targetName.StartsWith("/0/")) { targetName = act_dir + targetName; }
-				sourceName = ToRelPath(sourceName);
-				targetName = ToRelPath(targetName);
+				if (!sourceName.StartsWith("/0/") && !sourceName.StartsWith("0:\\")) { sourceName = act_dir + sourceName; }
+				if (!targetName.StartsWith("/0/") && !targetName.StartsWith("0:\\")) { targetName = act_dir + targetName; }
+				if (!sourceName.StartsWith("0:\\")) { sourceName = ToRelPath(sourceName); }
+				if (!targetName.StartsWith("0:\\")) { targetName = ToRelPath(targetName); }
 			}
 			if (File.Exists(sourceName))
 			{
@@ -438,10 +444,10 @@ namespace Seting_DOS.Drivers
 		}
 		public static void Rename(string sourceName, string targetName, bool noFeedback = false)
 		{
-			if (!sourceName.StartsWith("/0/")) { sourceName = act_dir + sourceName; }
-			if (!targetName.StartsWith("/0/")) { targetName = act_dir + targetName; }
-			sourceName = ToRelPath(sourceName);
-			targetName = ToRelPath(targetName);
+			if (!sourceName.StartsWith("/0/") && !sourceName.StartsWith("0:\\")) { sourceName = act_dir + sourceName; }
+			if (!targetName.StartsWith("/0/") && !targetName.StartsWith("0:\\")) { targetName = act_dir + targetName; }
+			if (!sourceName.StartsWith("0:\\")) { sourceName = ToRelPath(sourceName); }
+			if (!targetName.StartsWith("0:\\")) { targetName = ToRelPath(targetName); }
 			if (File.Exists(sourceName))
 			{
 				if (File.Exists(targetName))

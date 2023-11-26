@@ -1,5 +1,5 @@
 ﻿/// 
-/// File for storing environment variables, Last modified: 2023. 11. 13.
+/// File for storing environment variables, Last modified: 2023. 11. 26.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -34,7 +34,7 @@ namespace Seting_DOS.Services
 		/// 3. It will update the system to the latest version in steps. What does this mean? Let's use our example.
 		/// It won't update from b1.0 to b1.2. It will first update b1.0 to b1.1 then to b1.2.
 		/// </summary>
-		public static readonly string[] versionHistory = { "Seting-DOS b1.0" };
+		public static readonly string[] versionHistory = { "Seting-DOS b1.0", "Seting-DOS b1.0.1" };
 		public static string localVer;
 		public static int rem = 0;
 
@@ -74,8 +74,14 @@ namespace Seting_DOS.Services
 			if (localVer == versionHistory[0])
 			{
 				rem = versionHistory.Count();
-				DrawScreen("Seting-DOS b1.0 to ");
-				//Updater if version is b1.0. Empty because no new updates.
+				DrawScreen("Seting-DOS b1.0 to b1.0.1");
+				//No filesystem upgrades are present in this version change
+			}
+			if (localVer == versionHistory[1])
+			{
+				rem = versionHistory.Count();
+				DrawScreen("Seting-DOS b1.0.1 to ");
+				//Updater if version is b1.0.1. Empty because no new updates.
 			}
 			StreamWriter ver = new StreamWriter("0:\\SDOS\\version.dat");
 			ver.WriteLine(EnvVars.shortversion);

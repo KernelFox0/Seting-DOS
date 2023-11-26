@@ -1,5 +1,5 @@
 ﻿/// 
-/// Keyboard driver, Last modified: 2023. 07. 30.
+/// Keyboard driver, Last modified: 2023. 11. 26.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -145,7 +145,7 @@ namespace Seting_DOS.Drivers
 					Console.ForegroundColor = ConsoleColor.White;
 				}
 			}
-			return cmd;
+			return cmd.Trim('\n');
 		}
 	}
 }
