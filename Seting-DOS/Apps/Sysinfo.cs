@@ -1,5 +1,5 @@
 ﻿/// 
-/// Seting-DOS Neofetch program, Last modified: 2023. 07. 30.
+/// Seting-DOS Sysinfo program, Last modified: 2023. 07. 30.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Seting_DOS.Apps
 {
-	public static class Neofetch
+	public static class Sysinfo
 	{
 		public static void Open() //App open command
 		{

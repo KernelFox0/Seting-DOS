@@ -47,7 +47,7 @@ preferences; prefs; settings - Opens the preference editor
 Applications:
 calc - Calculator
 credits - Shows the credits for this OS
-neofetch - Shows system information
+sysinfo; neofetch - Shows system information
 play < (name) > - Plays beep music from a file
 edit; textedit; notepad [ (name) ] - Simple text editor [opens/creates a file]
 maze; mazegame - A maze game

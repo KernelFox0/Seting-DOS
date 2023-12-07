@@ -1,5 +1,5 @@
 ﻿/// 
-/// Command handler, Last modified: 2023. 11. 13.
+/// Command handler, Last modified: 2023. 12. 07.
 /// 
 /// Copyright (C) 2023
 /// 
@@ -29,11 +29,14 @@ namespace Seting_DOS.Services
 			string[] cmdSplit = command.Split(' ');
 			string cmd = cmdSplit[0].ToLower();
 			List<string> tempArgs = new List<string>();
+			List<string> tempInputs = new List<string>();
 			for (int i = 1; i < cmdSplit.Length; i++)
 			{
+				if (cmdSplit[i] != "" && cmdSplit[i] != " ") { tempInputs.Add(cmdSplit[i]); }
 				if (cmdSplit[i] != "" && cmdSplit[i] != " ") { tempArgs.Add(cmdSplit[i].ToLower()); }
 			}
 			string[] args = tempArgs.ToArray();
+			string[] inputs = tempInputs.ToArray();
 			#endregion
 			#region Easter eggs. Find them, don't look inside
 			if (command == "OwO")
@@ -118,13 +121,13 @@ namespace Seting_DOS.Services
 			{
 				if (args.Length == 0 || args[0] == ".") { VSFS.ListContent(); }
 				else if (args[0] == "..") { VSFS.ListContent(".."); }
-				else { string path = args[0]; if (!path.StartsWith("/")) { path = VSFS.act_dir + path; } VSFS.ListContent(VSFS.ToRelPath(path)); }
+				else { string path = inputs[0]; if (!path.StartsWith("/")) { path = VSFS.act_dir + path; } VSFS.ListContent(VSFS.ToRelPath(path)); }
 			}
 			else if (cmd == "cd..") { VSFS.ChangeDir(".."); }
 			else if (cmd == "cd")
 			{
 				if (args.Length == 0) { VSFS.ChangeDir(); }
-				else { VSFS.ChangeDir(args[0]); }
+				else { VSFS.ChangeDir(inputs[0]); }
 			}
 			else if (cmd == "md" || cmd == "mkdir")
 			{
@@ -138,7 +141,7 @@ namespace Seting_DOS.Services
 				}
 				else
 				{
-					string name = args[0];
+					string name = inputs[0];
 					if (!name.StartsWith("/")) { name = VSFS.act_dir + name; }
 					name = VSFS.ToRelPath(name).Replace("_", "-");
 					VSFS.MakeDir(name, false, true);
@@ -156,8 +159,8 @@ namespace Seting_DOS.Services
 				}
 				else
 				{
-					if (args[0] == "-r" || args[0] == "/f") { VSFS.RemoveDir(true, args[1]); }
-					else { VSFS.RemoveDir(false, args[0]); }
+					if (args[0] == "-r" || args[0] == "/f") { VSFS.RemoveDir(true, inputs[1]); }
+					else { VSFS.RemoveDir(false, inputs[0]); }
 				}
 			}
 			else if (cmd == "del" || cmd == "rm")
@@ -172,8 +175,8 @@ namespace Seting_DOS.Services
 				}
 				else
 				{
-					if (args[0] == "-q" || args[0] == "/q") { VSFS.RemoveFile(args[1], true); }
-					else { VSFS.RemoveFile(args[0]); }
+					if (args[0] == "-q" || args[0] == "/q") { VSFS.RemoveFile(inputs[1], true); }
+					else { VSFS.RemoveFile(inputs[0]); }
 				}
 			}
 			else if (cmd == "copy" || cmd == "cp")
@@ -188,7 +191,7 @@ namespace Seting_DOS.Services
 				}
 				else
 				{
-					VSFS.Copy(args[0], args[1]);
+					VSFS.Copy(inputs[0], inputs[1]);
 				}
 			}
 			else if (cmd == "move" || cmd == "mv")
@@ -203,7 +206,7 @@ namespace Seting_DOS.Services
 				}
 				else
 				{
-					VSFS.Move(args[0], args[1]);
+					VSFS.Move(inputs[0], inputs[1]);
 				}
 			}
 			else if (cmd == "ren" || cmd == "rename")
@@ -218,7 +221,7 @@ namespace Seting_DOS.Services
 				}
 				else
 				{
-					VSFS.Rename(args[0], args[1]);
+					VSFS.Rename(inputs[0], inputs[1]);
 				}
 			}
 			else if (cmd == "cat" || cmd == "type" || cmd == "read")
@@ -233,7 +236,7 @@ namespace Seting_DOS.Services
 				}
 				else
 				{
-					TextOperations.Read(args[0]);
+					TextOperations.Read(inputs[0]);
 				}
 			}
 			else if (cmd == "write")
@@ -393,15 +396,15 @@ namespace Seting_DOS.Services
 							" under section 7. This requirement modifies the requirement in section 4 to “keep intact all notices”." +
 							"\n- c) You must license the entire work, as a whole, under this License to anyone who comes into possession of a" +
 							"copy. This License will therefore apply, along with any applicable section 7 additional terms, to the whole of the work, and all its parts, regardless of how they are packaged.\n"); Console.ReadKey();
-							Console.Write(" This License gives no permission to license the work" +
-							" in any other way, but it does not invalidate such permission if you have separately received it." +
-							" - d) If the work has interactive user interfaces, each must display Appropriate Legal Notices; however, if the" +
-							" Program has interactive interfaces that do not display Appropriate Legal Notices, your work need not make them\ndo so." +
-							"\n\nA compilation of a covered work with other separate and independent works, which are not by their nature extensions" +
-							" of the covered work, and which are not combined with it such as to form a larger program, in or on a volume of a" +
-							" storage or distribution medium, is called an “aggregate” if the compilation and its resulting copyright are not used to" +
-							" limit the access or legal rights of the compilation's users beyond what the individual works permit. Inclusion of a" +
-							" covered work in an aggregate does not cause this License to apply to the other parts of the aggregate.\n");
+						Console.Write(" This License gives no permission to license the work" +
+						" in any other way, but it does not invalidate such permission if you have separately received it." +
+						" - d) If the work has interactive user interfaces, each must display Appropriate Legal Notices; however, if the" +
+						" Program has interactive interfaces that do not display Appropriate Legal Notices, your work need not make them\ndo so." +
+						"\n\nA compilation of a covered work with other separate and independent works, which are not by their nature extensions" +
+						" of the covered work, and which are not combined with it such as to form a larger program, in or on a volume of a" +
+						" storage or distribution medium, is called an “aggregate” if the compilation and its resulting copyright are not used to" +
+						" limit the access or legal rights of the compilation's users beyond what the individual works permit. Inclusion of a" +
+						" covered work in an aggregate does not cause this License to apply to the other parts of the aggregate.\n");
 					}
 				}
 				else { TextEdit.StartApp("/0/SDOS/etc/license.txt"); }
@@ -415,6 +418,12 @@ namespace Seting_DOS.Services
 				PreferencesEditor.StartApp();
 				Console.BackgroundColor = ConsoleColor.Black; Console.ForegroundColor = ConsoleColor.White; Console.Clear();
 			}
+			else if (cmd == "echo")
+			{
+				string[] buffer = new string[inputs.Length];
+				for (int i = 0; i < inputs.Length; i++) { buffer[i] = inputs[i]; }
+				Console.WriteLine(buffer);
+			}
 			#endregion
 			#region Applications
 			else if (cmd == "calc")
@@ -425,9 +434,9 @@ namespace Seting_DOS.Services
 			{
 				Credits.Show();
 			}
-			else if (cmd == "neofetch")
+			else if (cmd == "sysinfo" || cmd == "neofetch")
 			{
-				Neofetch.Open();
+				Sysinfo.Open();
 			}
 			else if (cmd == "play")
 			{
@@ -437,7 +446,7 @@ namespace Seting_DOS.Services
 				}
 				else
 				{
-					string path = VSFS.ToRelPath(VSFS.act_dir + args[0]);
+					string path = VSFS.ToRelPath(VSFS.act_dir + inputs[0]);
 					BeepMusicPlayer.MusicPlayer(path);
 				}
 			}
@@ -445,7 +454,7 @@ namespace Seting_DOS.Services
 			{
 				if (args.Length > 0)
 				{
-					string path = args[0];
+					string path = inputs[0];
 					if (!path.StartsWith("/")) { path = VSFS.act_dir + path; }
 					TextEdit.StartApp(path);
 				}
@@ -455,7 +464,7 @@ namespace Seting_DOS.Services
 			{
 				if (args.Length > 0)
 				{
-					MazeGame.Start(VSFS.ToRelPath(args[0]));
+					MazeGame.Start(VSFS.ToRelPath(inputs[0]));
 				}
 				else { MazeGame.Start(); }
 			}
