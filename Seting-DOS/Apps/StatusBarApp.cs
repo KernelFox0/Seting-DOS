@@ -2,7 +2,7 @@
 /// StatusBar application, Last modified: 2023. 07. 30.
 /// Note: App is always "running", no terminal command
 /// 
-/// Copyright (C) 2023
+/// Copyright (C) 2023-
 /// 
 /// This file is part of Seting-DOS.
 /// Seting-DOS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License

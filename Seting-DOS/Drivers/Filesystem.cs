@@ -1,7 +1,7 @@
 ﻿/// 
-/// VSFS (Virtual Syntax File System) Driver, Last modified: 2023. 11. 26.
+/// VSFS (Virtual Syntax File System) Driver, Last modified: 2024. 11. 26.
 /// 
-/// Copyright (C) 2023
+/// Copyright (C) 2023-
 /// 
 /// This file is part of Seting-DOS.
 /// Seting-DOS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
