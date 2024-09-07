@@ -219,6 +219,28 @@ namespace Seting_DOS.Services
 					TextOperations.Write(command.Remove(0, cmd.Length + args[0].Length + 2), args[0]);
 				}
 			}
+			else if (cmd == "searchin")
+			{
+				if (args.Length < 2 || ((args[0] == "-i" | args[0] == "/i") & args.Length < 3))
+				{
+					Messages.Error("Insufficent arguments!\nUsage: grep [-i] <File name> <String to search>");
+				}
+				else
+				{
+					bool ignoreCase = false;
+					if (args[0] == "-i" || args[0] == "/i") { ignoreCase = true; }
+					string textToSearch;
+					if (ignoreCase)
+					{
+						textToSearch = command.Remove(0, cmd.Length + args[0].Length + args[1].Length + 3);
+					}
+					else
+					{
+						textToSearch = command.Remove(0, cmd.Length + args[0].Length + 2);
+					}
+					TextOperations.SearchIn((ignoreCase ? args[1] : args[0]), textToSearch, ignoreCase);
+				}
+			}
 			#endregion
 			#region System commands
 			else if (cmd == "alias")

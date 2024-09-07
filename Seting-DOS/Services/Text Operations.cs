@@ -1,5 +1,5 @@
 ﻿/// 
-/// Textfile operation services, Last modified: 2023. 07. 30.
+/// Textfile operation services, Last modified: 2024. 05. 29.
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -14,10 +14,7 @@
 /// 
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using Seting_DOS.Drivers;
 
@@ -79,6 +76,45 @@ namespace Seting_DOS.Services
 			StreamWriter doc = new StreamWriter(path);
 			doc.Write(text);
 			doc.Close();
+		}
+		public static void SearchIn(string path, string textToSearch, bool ignoreCase = false)
+		{
+			string content = "";
+			try
+			{
+				if (!path.StartsWith("/")) { path = VSFS.act_dir + path; }
+				path = VSFS.ToRelPath(path);
+				if (File.Exists(path))
+				{
+					StreamReader file = new StreamReader(path);
+					content = file.ReadToEnd();
+					file.Close();
+				}
+				else
+				{
+					Messages.Error("File doesn't exist!");
+				}
+			}
+			catch { Messages.Error("Not a valid file path! You might have typed it wrong or it doesn't exist!"); return; }
+			string[] lines = content.Split('\n');
+			int count = 0;
+			foreach (string line in lines)
+			{
+				if (ignoreCase ? line.ToLower().Contains(textToSearch.ToLower()) : line.Contains(textToSearch))
+				{
+					int i = ignoreCase ? line.ToLower().IndexOf(textToSearch.ToLower()) : line.IndexOf(textToSearch);
+					Console.ForegroundColor = ConsoleColor.White;
+					Console.Write(line.Substring(0, i));
+					Console.ForegroundColor = ConsoleColor.Magenta;
+					Console.Write(line.Remove(0, i).Remove(textToSearch.Length));
+					Console.ForegroundColor = ConsoleColor.White;
+					Console.Write(line.Substring(i + textToSearch.Length) + "\n");
+					count++;
+				}
+			}
+			Console.ForegroundColor = ConsoleColor.Cyan;
+			Console.WriteLine($"{count} matching line" + ((count != 1) ? "s" : "") + $" found (out of {lines.Length})");
+			Console.ForegroundColor = ConsoleColor.White;
 		}
 	}
 }
