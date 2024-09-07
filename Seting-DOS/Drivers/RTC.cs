@@ -1,5 +1,5 @@
 ﻿/// 
-/// Real Time Clock driver, Last modified: 2023. 07. 30.
+/// Real Time Clock driver, Last modified: 2024. 03. 08.
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -33,7 +33,7 @@ namespace Seting_DOS.Drivers
                 string[] status = { "done", "RTC service check was successful" };
                 return status; //Return message for BootMSG
             }
-            catch (Exception e) //If anything goes wrond while getting RTC values
+            catch (Exception e) //If anything goes wrong while getting RTC values
             {
                 string[] error = {"error", "RTC service unavailable! Reason: " + e.Message };
                 return error; //Return error for BootMSG
@@ -53,7 +53,7 @@ namespace Seting_DOS.Drivers
             } //Get minute and and make sure it's in double digit format
             if (seconds)
             {
-                string second = Cosmos.HAL.RTC.Hour.ToString();
+                string second = Cosmos.HAL.RTC.Second.ToString();
                 if (second.Length == 1)
                 {
                     second = "0" + second;
