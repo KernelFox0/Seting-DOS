@@ -378,6 +378,22 @@ namespace Seting_DOS.Services
 				PreferencesEditor.StartApp();
 				Console.BackgroundColor = ConsoleColor.Black; Console.ForegroundColor = ConsoleColor.White; Console.Clear();
 			}
+			else if (cmd == "time")
+			{
+				string[] time = RTC.GetTime(true);
+				Console.WriteLine($"{time[0]}:{time[1]}:{time[2]}");
+			}
+			else if (cmd == "date")
+			{
+				string[] date = RTC.GetDate();
+				Console.WriteLine($"{date[0]}. {date[1]}. {date[2]}.");
+			}
+			else if (cmd == "fulltime" || cmd == "fulldate" || cmd == "timedate" || cmd == "datetime")
+			{
+				string[] time = RTC.GetTime(true);
+				string[] date = RTC.GetDate();
+				Console.WriteLine($"{date[0]}. {date[1]}. {date[2]}. {time[0]}:{time[1]}:{time[2]}");
+			}
 			else if (cmd == "echo")
 			{
 				foreach (string word in inputs) { Console.Write(word + " "); }
