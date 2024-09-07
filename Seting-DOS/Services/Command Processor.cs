@@ -380,8 +380,8 @@ namespace Seting_DOS.Services
 			}
 			else if (cmd == "echo")
 			{
-				string[] buffer = new string[inputs.Length];
-				for (int i = 0; i < inputs.Length; i++) { buffer[i] = inputs[i]; }
+				foreach (string word in inputs) { Console.Write(word + " "); }
+				Console.Write("\n");
 				Console.WriteLine(buffer);
 			}
 			#endregion
