@@ -1,5 +1,5 @@
 ﻿/// 
-/// Logon window and user loader, Last modified: 2023. 11. 11.
+/// Logon window and user loader, Last modified: 2024. 06. 19.
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -30,7 +30,7 @@ namespace Seting_DOS.Apps
         public static void LockScreen()
         {
             #region Write UI
-            TUIBGCol.Set();
+            TUIBGCol.Set(true);
             Console.ForegroundColor = ConsoleColor.White;
             Console.Clear();
             Console.SetCursorPosition(0, 0);
@@ -71,7 +71,7 @@ namespace Seting_DOS.Apps
         public static void LogonScreen()
         {
             #region Write UI
-            TUIBGCol.Set();
+            TUIBGCol.Set(true);
             Console.ForegroundColor = ConsoleColor.White;
             Console.Clear();
             Console.SetCursorPosition(0, 0);
@@ -145,7 +145,7 @@ namespace Seting_DOS.Apps
         public static void PasswordScreen(string folderName, string username, bool wrong = false, int tries = 5)
         {
             #region Write UI
-            TUIBGCol.Set();
+            TUIBGCol.Set(true);
             Console.ForegroundColor = ConsoleColor.White;
             Console.Clear();
             Console.SetCursorPosition(0, 0);
@@ -260,6 +260,12 @@ namespace Seting_DOS.Apps
             if (!File.Exists(@"0:\SDOS\preferences\postins.idp"))
             {
                 PostInstall.Start();
+            }
+            else
+            {
+                StreamReader utheme = new(EnvVars.userfolder + "theme.dat");
+                EnvVars.theme = utheme.ReadToEnd();
+                utheme.Close();
             }
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;

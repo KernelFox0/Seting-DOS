@@ -1,5 +1,5 @@
 ﻿/// 
-/// Set TextUI background color based on the user preference, Last modified: 2023. 07. 30.
+/// Set TextUI background color based on the user preference, Last modified: 2024. 06. 19.
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -17,12 +17,20 @@ using System;
 
 namespace Seting_DOS.Services
 {
-    public static class TUIBGCol
-    {
-        public static void Set()
-        {
-            if (EnvVars.theme == "classic") { Console.BackgroundColor = ConsoleColor.Blue; }
-            else { Console.BackgroundColor = ConsoleColor.Black; }
-        }
-    }
+	public static class TUIBGCol
+	{
+		public static void Set(bool systemApp = false)
+		{
+			if (systemApp)
+			{
+				if (EnvVars.systemTheme == "classic") { Console.BackgroundColor = ConsoleColor.Blue; }
+				else { Console.BackgroundColor = ConsoleColor.Black; }
+			}
+			else
+			{
+				if (EnvVars.theme == "classic") { Console.BackgroundColor = ConsoleColor.Blue; }
+				else { Console.BackgroundColor = ConsoleColor.Black; }
+			}
+		}
+	}
 }
