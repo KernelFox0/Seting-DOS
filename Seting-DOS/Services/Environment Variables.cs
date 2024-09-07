@@ -1,5 +1,5 @@
 ﻿/// 
-/// File for storing environment variables, Last modified: 2023. 11. 26.
+/// File for storing environment variables, Last modified: 2024. 06. 19.
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -22,6 +22,7 @@ namespace Seting_DOS.Services
 		public static string username = "unknown";
 		public static string hostname = "unknown";
 		public static string theme = "classic";
+        public static string systemTheme = "classic";
 		public static bool mute = false;
 
 		public static bool verboseMode = false;
@@ -32,12 +33,14 @@ namespace Seting_DOS.Services
 		public const string kernelVer = "Cosmos Dev Kit Commit 189f4e1";
 
 
-		public static void Write(string type, string name, string value)
+		private static void Write(string type, string name, string value)
 		{
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("({0})", type);
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("{0}: ", name);
+            Console.Write(name);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write(":");
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.Write("{0}\n", value);
         }
@@ -46,6 +49,7 @@ namespace Seting_DOS.Services
 			Write("static string", "username", username);
             Write("static string", "hostname", hostname);
             Write("static string", "theme", theme);
+            Write("static string", "systemTheme", systemTheme);
             Write("static bool", "mute", mute.ToString());
             Write("static bool", "verboseMode", verboseMode.ToString());
             Write("static bool", "debugBoot", debugBoot.ToString());

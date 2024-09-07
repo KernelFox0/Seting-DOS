@@ -1,5 +1,5 @@
 ﻿/// 
-/// File for storing environment variables, Last modified: 2023. 11. 26.
+/// Manages updating the file system after a system update (so no reinstall needed), Last modified: 2024. 06. 19.
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Cosmos.HAL;
+using Seting_DOS.Drivers;
 
 namespace Seting_DOS.Services
 {
@@ -34,7 +35,7 @@ namespace Seting_DOS.Services
 		/// 3. It will update the system to the latest version in steps. What does this mean? Let's use our example.
 		/// It won't update from b1.0 to b1.2. It will first update b1.0 to b1.1 then to b1.2.
 		/// </summary>
-		public static readonly string[] versionHistory = { "Seting-DOS b1.0", "Seting-DOS b1.0.1" };
+		public static readonly string[] versionHistory = { "Seting-DOS b1.0", "Seting-DOS b1.0.1", "Seting-DOS b1.1" };
 		public static string localVer;
 		public static int rem = 0;
 
@@ -73,16 +74,35 @@ namespace Seting_DOS.Services
 			Console.WriteLine("[Updater] Updating...");
 			if (localVer == versionHistory[0])
 			{
-				rem = versionHistory.Count();
+				rem = versionHistory.Count()-1;
 				DrawScreen("Seting-DOS b1.0 to b1.0.1");
 				//No filesystem upgrades are present in this version change
 			}
 			if (localVer == versionHistory[1])
 			{
-				rem = versionHistory.Count();
-				DrawScreen("Seting-DOS b1.0.1 to ");
-				//Updater if version is b1.0.1. Empty because no new updates.
+				//Updater if version is b1.0.1
+				rem = versionHistory.Count()-2;
+				DrawScreen("Seting-DOS b1.0.1 to Seting-DOS b1.1");
+				//Updater if version is b1.0.1.
+				string[] dirs = Directory.GetDirectories(@"0:\Users");
+				foreach(string dir in dirs)
+				{
+					Directory.CreateDirectory(dir + "\\Pictures");
+					StreamWriter th = new StreamWriter(dir + "\\theme.dat");
+					th.Write(EnvVars.systemTheme);
+					th.Close();
+				}
+				File.Delete(@"0:\SDOS\etc\help.txt");
+				using var helpfile = new BinaryWriter(File.OpenWrite(@"0:\SDOS\etc\help.txt"));
+				helpfile.Write(VSFS.helpFile);
+				helpfile.Close();
 			}
+			/*if (localVer == versionHistory[1])
+			{
+				rem = versionHistory.Count()-3;
+				DrawScreen("Seting-DOS b1.1 to ");
+				//Updater if version is b1.1.
+			}*/
 			StreamWriter ver = new StreamWriter("0:\\SDOS\\version.dat");
 			ver.WriteLine(EnvVars.shortversion);
 			ver.Close();
@@ -123,7 +143,7 @@ namespace Seting_DOS.Services
             TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
 			Console.SetCursorPosition(26, 3); Console.Write("{0} to {1}", localVer, EnvVars.shortversion);
             Console.SetCursorPosition(15, 6); Console.Write(curTask);
-            Console.SetCursorPosition(19, 8); Console.Write("{0} to {1}", localVer, EnvVars.shortversion);
+            Console.SetCursorPosition(19, 8); Console.Write(rem);
         }
 	}
 }
