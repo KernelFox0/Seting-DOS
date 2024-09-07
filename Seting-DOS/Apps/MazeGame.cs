@@ -1,6 +1,6 @@
 ﻿/// 
-/// Basic maze game, Last modified: 2023. 07. 31.
-/// Game version: v1.0
+/// Basic maze game, Last modified: 2024. 05. 29.
+/// Game version: v1.0.1
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -14,6 +14,7 @@
 /// You should have received a copy of the GNU General Public License along with Seting-DOS. If not, see <https://www.gnu.org/licenses/>.
 /// 
 
+using Seting_DOS.Drivers;
 using Seting_DOS.Services;
 using System;
 using System.Collections.Generic;
@@ -74,7 +75,7 @@ namespace Seting_DOS.Apps
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
-				Console.Write(@"                               Game version: v1.0                               ");
+				Console.Write(@"                              Game version: v1.0.1                              ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
@@ -91,7 +92,7 @@ namespace Seting_DOS.Apps
 				while (isInSelector)
 				{
 					Console.ForegroundColor = ConsoleColor.White;
-					Console.BackgroundColor = ConsoleColor.Black;
+					TUIBGCol.Set();
 					Console.SetCursorPosition(0, 12); Console.Write(@"    Play main level       Load level file       Create level       Exit game    ");
 					Console.ForegroundColor = ConsoleColor.Black;
 					Console.BackgroundColor = ConsoleColor.White;
@@ -195,6 +196,7 @@ namespace Seting_DOS.Apps
                 file = Console.ReadLine();
 				if (file == "") { Start(); return; }
 				else if (!file.StartsWith("/")) { file = "/0/Users/" + EnvVars.username + "/AppData/MazeGame/" + file; }
+				file = VSFS.ToRelPath(file);
 				if (!File.Exists(file))
 				{
 					Console.SetCursorPosition(2, 9);
@@ -203,7 +205,7 @@ namespace Seting_DOS.Apps
 					Drivers.Beep.Sound.Error();
 					ConsoleKeyInfo key = Console.ReadKey();
 					if (key.Key == ConsoleKey.Escape) { Start(); }
-					else { Load(); return; }
+					else { Load("file"); return; }
 				}
 			}
 			else if (file == null)
