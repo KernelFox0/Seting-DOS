@@ -444,6 +444,20 @@ namespace Seting_DOS.Services
 				}
 				else { MazeGame.Start(); }
 			}
+			else if (cmd == "colors")
+			{
+				Console.BackgroundColor = ConsoleColor.White;
+				Console.ForegroundColor = ConsoleColor.Black; Console.Write("██ Black     ");
+				Console.BackgroundColor = ConsoleColor.Black; Console.ForegroundColor = ConsoleColor.White; Console.Write("██ White\n");
+				Console.ForegroundColor = ConsoleColor.DarkGray; Console.Write("██ Dark Gray "); Console.ForegroundColor = ConsoleColor.Gray; Console.Write("██ Gray\n");
+				Console.ForegroundColor = ConsoleColor.DarkRed; Console.Write("██ Red       "); Console.ForegroundColor = ConsoleColor.Red; Console.Write("██ Light Red\n");
+				Console.ForegroundColor = ConsoleColor.DarkGreen; Console.Write("██ Green     "); Console.ForegroundColor = ConsoleColor.Green; Console.Write("██ Light Green\n");
+				Console.ForegroundColor = ConsoleColor.DarkBlue; Console.Write("██ Blue      "); Console.ForegroundColor = ConsoleColor.Blue; Console.Write("██ Light Blue\n");
+				Console.ForegroundColor = ConsoleColor.DarkMagenta; Console.Write("██ Purple    "); Console.ForegroundColor = ConsoleColor.Magenta; Console.Write("██ Light Purple\n");
+				Console.ForegroundColor = ConsoleColor.DarkYellow; Console.Write("██ Brown     "); Console.ForegroundColor = ConsoleColor.Yellow; Console.Write("██ Yellow\n");
+				Console.ForegroundColor = ConsoleColor.DarkCyan; Console.Write("██ Cyan      "); Console.ForegroundColor = ConsoleColor.Cyan; Console.Write("██ Light Cyan\n");
+				Console.ForegroundColor = ConsoleColor.White;
+			}
 			#endregion
 			#region Alias test, incorrect operation message
 			else
