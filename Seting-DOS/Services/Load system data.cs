@@ -1,5 +1,5 @@
 ﻿/// 
-/// Environment variable loader, Last modified: 2023. 11. 13.
+/// Environment variable loader, Last modified: 2024. 06. 19.
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -28,7 +28,7 @@ namespace Seting_DOS.Services
                 EnvVars.hostname = host.ReadToEnd();
                 host.Close();
                 StreamReader theme = new StreamReader(@"0:\SDOS\preferences\theme.dat");
-                EnvVars.theme = theme.ReadToEnd();
+                EnvVars.systemTheme = theme.ReadToEnd();
                 theme.Close();
                 StreamReader verbose = new StreamReader(@"0:\SDOS\preferences\verboseBoot.pref");
                 string content = verbose.ReadToEnd().ToLower().Trim(' ').Trim('\n');
