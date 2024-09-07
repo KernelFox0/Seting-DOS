@@ -1,5 +1,5 @@
 ﻿/// 
-/// Seting-DOS Sysinfo program, Last modified: 2023. 07. 30.
+/// Seting-DOS Sysinfo program, Last modified: 2024. 05. 29.
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -36,7 +36,7 @@ namespace Seting_DOS.Apps
 			Console.Write("|   X        XX   X   XX            |    "); Console.ForegroundColor = ConsoleColor.Green; Console.Write("Host:"); Console.ForegroundColor = ConsoleColor.White; Console.Write("                                  ");
 			Console.Write("|  X        X    XXX    X           |    "); Console.ForegroundColor = ConsoleColor.Green; Console.Write("Kernel: "); Console.ForegroundColor = ConsoleColor.White; Console.Write("ß¤×                            ");
 			Console.Write("| X   XXXX  X   X X X   X           |    "); Console.ForegroundColor = ConsoleColor.Green; Console.Write("Uptime: "); Console.ForegroundColor = ConsoleColor.White; Console.Write("                               ");
-			Console.Write("|           X     X     X           |    "); Console.ForegroundColor = ConsoleColor.Green; Console.Write("Shell: "); Console.ForegroundColor = ConsoleColor.White; Console.Write("Seting-Shell 0.1                ");
+			Console.Write("|           X     X     X           |    "); Console.ForegroundColor = ConsoleColor.Green; Console.Write("Shell: "); Console.ForegroundColor = ConsoleColor.White; Console.Write("Seting-Shell 1.0                ");
 			Console.Write("|            XX   X   XX            |    "); Console.ForegroundColor = ConsoleColor.Green; Console.Write("Resolution: "); Console.ForegroundColor = ConsoleColor.White; Console.Write("                           ");
 			Console.Write("|              XXXXXXX              |    "); Console.ForegroundColor = ConsoleColor.Green; Console.Write("Color support: "); Console.ForegroundColor = ConsoleColor.White; Console.Write("16 Colors               ");
 			Console.Write("|                                   |    "); Console.ForegroundColor = ConsoleColor.Green; Console.Write("TextUI Theme: "); Console.ForegroundColor = ConsoleColor.White; Console.Write("                         ");
@@ -83,38 +83,38 @@ namespace Seting_DOS.Apps
             #region Write color blocks on the screen
             Console.ForegroundColor = ConsoleColor.Black;
 			Console.Write("██");
+			Console.ForegroundColor = ConsoleColor.DarkGray;
+			Console.Write("██");
+			Console.ForegroundColor = ConsoleColor.DarkRed;
+			Console.Write("██");
+			Console.ForegroundColor = ConsoleColor.DarkGreen;
+			Console.Write("██");
+			Console.ForegroundColor = ConsoleColor.DarkBlue;
+			Console.Write("██");
+			Console.ForegroundColor = ConsoleColor.DarkMagenta;
+			Console.Write("██");
+			Console.ForegroundColor = ConsoleColor.DarkYellow;
+			Console.Write("██");
+			Console.ForegroundColor = ConsoleColor.DarkCyan;
+			Console.Write("██");
+			Console.SetCursorPosition(42, endY);
+			Console.ForegroundColor = ConsoleColor.White;
+			Console.Write("██");
 			Console.ForegroundColor = ConsoleColor.Gray;
 			Console.Write("██");
 			Console.ForegroundColor = ConsoleColor.Red;
 			Console.Write("██");
-			Console.ForegroundColor = ConsoleColor.Magenta;
+			Console.ForegroundColor = ConsoleColor.Green;
 			Console.Write("██");
 			Console.ForegroundColor = ConsoleColor.Blue;
 			Console.Write("██");
+			Console.ForegroundColor = ConsoleColor.Magenta;
+			Console.Write("██");
 			Console.ForegroundColor = ConsoleColor.Yellow;
 			Console.Write("██");
-			Console.ForegroundColor = ConsoleColor.Green;
+			Console.ForegroundColor = ConsoleColor.Cyan;
 			Console.Write("██");
 			Console.ForegroundColor = ConsoleColor.White;
-			Console.Write("██");
-			Console.SetCursorPosition(42, endY);
-			Console.BackgroundColor = ConsoleColor.Black;
-			Console.Write("  ");
-			Console.BackgroundColor = ConsoleColor.Gray;
-			Console.Write("  ");
-			Console.BackgroundColor = ConsoleColor.Red;
-			Console.Write("  ");
-			Console.BackgroundColor = ConsoleColor.Magenta;
-			Console.Write("  ");
-			Console.BackgroundColor = ConsoleColor.Blue;
-			Console.Write("  ");
-			Console.BackgroundColor = ConsoleColor.Yellow;
-			Console.Write("  ");
-			Console.BackgroundColor = ConsoleColor.Green;
-			Console.Write("  ");
-			Console.BackgroundColor = ConsoleColor.White;
-			Console.Write("  ");
-			Console.BackgroundColor = ConsoleColor.Black;
 			Console.SetCursorPosition(0, endY + 2);
 			#endregion
 			WriteData(endY); //Call data write script
@@ -167,7 +167,7 @@ namespace Seting_DOS.Apps
 			Console.SetCursorPosition(49, endY - 11);
 			Console.Write(Services.EnvVars.kernelVer); //Write COSMOS kernel version
 			Console.SetCursorPosition(53, endY - 8);
-			Console.Write("{0}x{1}", width, height); //Write screen resolution in characters
+			Console.Write("{0}x{1} characters", width, height); //Write screen resolution in characters
 			Console.SetCursorPosition(55, endY - 6);
 			Console.Write(theme); //Write theme
 			Console.SetCursorPosition(46, endY - 4);
