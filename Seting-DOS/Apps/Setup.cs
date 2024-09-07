@@ -1,5 +1,5 @@
 ﻿/// 
-/// System setup, Last modified: 2023. 11. 26.
+/// System setup, Last modified: 2024. 06. 19.
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -399,7 +399,8 @@ namespace Seting_DOS.Apps
 			VSFS.MakeDir(userFolder, true); Console.Write("██"); Global.PIT.Wait(10);
 			VSFS.act_dir = "/0/Users/" + userFolder + "/";
 			VSFS.cur_dir = "0:\\Users\\" + userFolder + "\\"; Console.Write("██"); Global.PIT.Wait(10);
-			VSFS.MakeDir("Documents", true); Console.Write("██"); Global.PIT.Wait(10);
+			VSFS.MakeDir("Documents", true); Console.Write("█"); Global.PIT.Wait(10);
+			VSFS.MakeDir("Pictures", true); Console.Write("█"); Global.PIT.Wait(10);
 			VSFS.MakeDir("Music", true); Console.Write("██"); Global.PIT.Wait(10);
 			VSFS.MakeDir("AppData", true); Console.Write("██"); Global.PIT.Wait(10);
 			VSFS.act_dir = "/0/Users/" + userFolder + "/AppData/";
@@ -452,6 +453,9 @@ namespace Seting_DOS.Apps
 			StreamWriter fn = new StreamWriter(@"0:\users\" + userFolder + @"\fullName.dat"); Console.Write("██");
 			fn.Write(userFolder);
 			fn.Close(); Global.PIT.Wait(10); Console.Write("██");
+			StreamWriter th = new StreamWriter(@"0:\users\" + userFolder + @"\theme.dat");
+			th.Write(EnvVars.theme);
+			th.Close(); Global.PIT.Wait(10); Console.Write("█");
 			if (password != "" && password != null)
 			{
 				StreamWriter pw = new StreamWriter(@"0:\users\" + userFolder + @"\password.pwd");
@@ -461,7 +465,7 @@ namespace Seting_DOS.Apps
 				pr.Write(reminder);
 				pr.Close(); Global.PIT.Wait(10);
 			}
-			Console.Write("██████");
+			Console.Write("███");
 			#endregion
 			Console.SetCursorPosition(9, 10);
 			Console.ForegroundColor = ConsoleColor.Green;
