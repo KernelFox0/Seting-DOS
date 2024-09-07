@@ -208,6 +208,7 @@ namespace Seting_DOS.Apps
                 PasswordScreen(folderName, username, true);
             }
             string userfolder = @"0:\Users\" + folderName + @"\";
+            EnvVars.userfolder = userfolder;
             if (File.Exists(userfolder + "password.pwd"))
             {
                 EnvVars.hasPassword = true;

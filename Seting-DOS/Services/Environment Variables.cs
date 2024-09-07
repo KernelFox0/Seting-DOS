@@ -24,6 +24,7 @@ namespace Seting_DOS.Services
 		public static string theme = "classic";
         public static string systemTheme = "classic";
 		public static bool mute = false;
+        public static string userfolder = "0:\\";
 
 		public static bool verboseMode = false;
         public static bool debugBoot = false;
@@ -51,7 +52,8 @@ namespace Seting_DOS.Services
             Write("static string", "theme", theme);
             Write("static string", "systemTheme", systemTheme);
             Write("static bool", "mute", mute.ToString());
-            Write("static bool", "verboseMode", verboseMode.ToString());
+			Write("static string", "userfolder", userfolder);
+			Write("static bool", "verboseMode", verboseMode.ToString());
             Write("static bool", "debugBoot", debugBoot.ToString());
             Write("static bool", "hasPassword", hasPassword.ToString());
             Write("const string", "versionstring", versionstring);
