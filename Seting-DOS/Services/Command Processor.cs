@@ -1,5 +1,5 @@
 ﻿/// 
-/// Command handler, Last modified: 2023. 12. 07.
+/// Command handler, Last modified: 2024. 05. 29.
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -81,42 +81,6 @@ namespace Seting_DOS.Services
 			}
 			#endregion
 			#region Filesystem related commands
-			else if (cmd == "reset")
-			{
-				Console.ForegroundColor = ConsoleColor.Yellow;
-				Console.Write("Are you sure? This will delete your data! [Y/N]: ");
-				Console.ForegroundColor = ConsoleColor.White;
-				ConsoleKeyInfo key = Console.ReadKey(); Console.Write("\n");
-				if (key.Key != ConsoleKey.Y) { return; }
-				if (EnvVars.hasPassword)
-				{
-					StreamReader p = new StreamReader(@"0:\Users\" + EnvVars.username + "\\password.pwd");
-					string password = p.ReadToEnd();
-					p.Close();
-					Console.Write("Enter your password: ");
-					string pass = Console.ReadLine();
-					if (pass != password) { return; }
-				}
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.Write("Are you really sure? This is not reversible! [Y/N]: ");
-				Console.ForegroundColor = ConsoleColor.White;
-				key = Console.ReadKey(); Console.Write("\n");
-				if (key.Key != ConsoleKey.Y) { return; }
-				Console.WriteLine("Deleting data...");
-				File.Delete(@"0:\SDOS\System\installed.idp");
-				try { VSFS.EmptyRootPartition(); }
-				catch (Exception e)
-				{
-					Console.ForegroundColor = ConsoleColor.Red;
-					Console.WriteLine("Error while deleting data! After restarting make sure to choose Format because\n otherwise the install process can fail!\nError message: {0}", e.Message);
-				}
-				Console.ForegroundColor = ConsoleColor.Green;
-				Beep.PCBeep(500);
-				Beep.PCBeep(300);
-				Console.Write("Done. Press any key to restart...");
-				Console.ReadKey();
-				Cosmos.System.Power.Reboot();
-			}
 			else if (cmd == "dir" || cmd == "ls")
 			{
 				if (args.Length == 0 || args[0] == ".") { VSFS.ListContent(); }
@@ -350,10 +314,6 @@ namespace Seting_DOS.Services
 						CrashUI.KernelCrash(ex);
 					}
 				}
-			}
-			else if (cmd == "postinstall")
-			{
-				PostInstall.Start();
 			}
 			else if (cmd == "envvars")
 			{

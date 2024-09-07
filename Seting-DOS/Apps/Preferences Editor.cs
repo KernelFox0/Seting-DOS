@@ -1,5 +1,5 @@
 ﻿/// 
-/// Preferences editor app, Last modified: 2023. 11. 26.
+/// Preferences editor app, Last modified: 2024. 06. 19.
 /// 
 /// Copyright (C) 2023-
 /// 
@@ -138,7 +138,7 @@ namespace Seting_DOS.Apps
 				Console.Write(@"    |   ( )                                                                     ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
-				Console.Write(@"   Theme: x                                                                     ");
+				Console.Write(@"   System theme: x                                                              ");
 				Console.Write(@"   The background color of TextUI apps                                          ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"   Verbose boot: [ ]                                                            ");
@@ -149,8 +149,8 @@ namespace Seting_DOS.Apps
 				Console.Write(@"                                                                                ");
 				Console.Write(@"   Change computer name: x                                                      ");
 				Console.Write(@"                                                                                ");
-				Console.Write(@"                                                                                ");
-				Console.Write(@"                                                                                ");
+				Console.Write(@"   Reset system                                                                 ");
+				Console.Write(@"   This may delete all data                                                     ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
@@ -161,8 +161,8 @@ namespace Seting_DOS.Apps
 				Console.SetCursorPosition(1, 24);
 				Console.Write(EnvVars.versionstring);
 				TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
-				Console.SetCursorPosition(10, 8);
-				if (EnvVars.theme == "classic") { Console.Write("Classic Blue"); }
+				Console.SetCursorPosition(17, 8);
+				if (EnvVars.systemTheme == "classic") { Console.Write("Classic Blue"); }
 				else { Console.Write("Black          "); }
 				Console.SetCursorPosition(18, 11);
 				if (EnvVars.verboseMode) { Console.BackgroundColor = ConsoleColor.Green; Console.Write(" "); }
@@ -182,21 +182,25 @@ namespace Seting_DOS.Apps
 					Console.Write("Debug boot:");
 					Console.SetCursorPosition(3, 17);
 					Console.Write("Change computer name:");
-					Console.SetCursorPosition(3, 8);
+					Console.SetCursorPosition(3, 19);
+					Console.Write("Reset system");
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
-					Console.Write("Theme:");
+					Console.SetCursorPosition(3, 8);
+					Console.Write("System theme:");
 				}
 				else if (selection == 1)
 				{
 					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
 					Console.SetCursorPosition(3, 8);
-					Console.Write("Theme:");
+					Console.Write("System theme:");
 					Console.SetCursorPosition(3, 14);
 					Console.Write("Debug boot:");
 					Console.SetCursorPosition(3, 17);
 					Console.Write("Change computer name:");
-					Console.SetCursorPosition(3, 11);
+					Console.SetCursorPosition(3, 19);
+					Console.Write("Reset system");
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 11);
 					Console.Write("Verbose boot:");
 				}
 				else if (selection == 2)
@@ -205,25 +209,44 @@ namespace Seting_DOS.Apps
 					Console.SetCursorPosition(3, 11);
 					Console.Write("Verbose boot:");
 					Console.SetCursorPosition(3, 8);
-					Console.Write("Theme:");
+					Console.Write("System theme:");
 					Console.SetCursorPosition(3, 17);
 					Console.Write("Change computer name:");
-					Console.SetCursorPosition(3, 14);
+					Console.SetCursorPosition(3, 19);
+					Console.Write("Reset system");
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 14);
 					Console.Write("Debug Boot:");
 				}
-				else
+				else if (selection == 3)
 				{
 					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
 					Console.SetCursorPosition(3, 11);
 					Console.Write("Verbose boot:");
 					Console.SetCursorPosition(3, 8);
-					Console.Write("Theme:");
+					Console.Write("System theme:");
 					Console.SetCursorPosition(3, 14);
 					Console.Write("Debug Boot:");
+					Console.SetCursorPosition(3, 19);
+					Console.Write("Reset system");
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
 					Console.SetCursorPosition(3, 17);
 					Console.Write("Change computer name:");
+				}
+				else if (selection == 4)
+				{
+					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 11);
+					Console.Write("Verbose boot:");
+					Console.SetCursorPosition(3, 8);
+					Console.Write("System theme:");
+					Console.SetCursorPosition(3, 14);
+					Console.Write("Debug Boot:");
+					Console.SetCursorPosition(3, 17);
+					Console.Write("Change computer name:");
+					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 19);
+					Console.Write("Reset system");
 				}
 				key = Console.ReadKey(true);
 				TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
@@ -241,6 +264,9 @@ namespace Seting_DOS.Apps
 							selection = 3;
 							break;
 						case 3:
+							selection = 4;
+							break;
+						case 4:
 							selection = 0;
 							break;
 					}
@@ -250,7 +276,7 @@ namespace Seting_DOS.Apps
 					switch (selection)
 					{
 						case 0:
-							selection = 3;
+							selection = 4;
 							break;
 						case 1:
 							selection = 0;
@@ -261,23 +287,26 @@ namespace Seting_DOS.Apps
 						case 3:
 							selection = 2;
 							break;
+						case 4:
+							selection = 3;
+							break;
 					}
 				}
 				else if (key.Key == ConsoleKey.Enter)
 				{
 					if (selection == 0)
 					{
-						if (EnvVars.theme == "black")
+						if (EnvVars.systemTheme == "black")
 						{
-							EnvVars.theme = "classic";
+							EnvVars.systemTheme = "classic";
 						}
 						else
 						{
-							EnvVars.theme = "black";
+							EnvVars.systemTheme = "black";
 						}
 						File.Delete(@"0:\SDOS\preferences\theme.dat");
 						StreamWriter theme = new StreamWriter(@"0:\SDOS\preferences\theme.dat");
-						theme.Write(EnvVars.theme);
+						theme.Write(EnvVars.systemTheme);
 						theme.Close();
 					}
 					else if (selection == 1)
@@ -310,7 +339,7 @@ namespace Seting_DOS.Apps
 						}
 						db.Close();
 					}
-					else
+					else if (selection == 3)
 					{
 						Console.SetCursorPosition(25, 17);
 						for (int i = 0; i < EnvVars.hostname.Length; i++)
@@ -328,6 +357,23 @@ namespace Seting_DOS.Apps
 							name.Close();
 							EnvVars.hostname = newName.Trim('\n');
 						}
+					}
+					else if (selection == 4)
+					{
+						File.Delete(@"0:\SDOS\System\installed.idp");
+						try { VSFS.EmptyRootPartition(); }
+						catch (Exception e)
+						{
+							Console.ForegroundColor = ConsoleColor.Red;
+							Console.WriteLine("Error while deleting data! After restarting make sure to choose Format because\n otherwise the install process can fail!\nError message: {0}", e.Message);
+							Console.Write("Press any key to continue...");
+							Console.ReadKey();
+							Cosmos.System.Power.Reboot();
+						}
+						Beep.PCBeep(500);
+						Beep.PCBeep(300);
+						Cosmos.HAL.Global.PIT.Wait(200);
+						Cosmos.System.Power.Reboot();
 					}
 				}
 				else if (key.Modifiers == ConsoleModifiers.Control && key.Key == ConsoleKey.X)
@@ -363,12 +409,12 @@ namespace Seting_DOS.Apps
 				Console.Write(@"                                                                                ");
 				Console.Write(@"   Change password                                                              ");
 				Console.Write(@"                                                                                ");
+				Console.Write(@"   Rerun Post-Install script                                                    ");
 				Console.Write(@"                                                                                ");
-				Console.Write(@"                                                                                ");
-				Console.Write(@"                                                                                ");
+				Console.Write(@"   Theme: x                                                                     ");
+				Console.Write(@"   The background color of TextUI apps                                          ");
 				Console.Write(@"                                                                                ");
 				/*Console.Write(@"   Manage other accounts (NOT YET IMPLEMENTED)                                  ");*/
-				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
 				Console.Write(@"                                                                                ");
@@ -383,6 +429,9 @@ namespace Seting_DOS.Apps
 				TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
 				Console.SetCursorPosition(20, 8);
 				Console.Write(EnvVars.username);
+				Console.SetCursorPosition(10, 16);
+				if (EnvVars.theme == "classic") { Console.Write("Classic Blue"); }
+				else { Console.Write("Black          "); }
 				if (selection == 0)
 				{
 					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
@@ -390,8 +439,12 @@ namespace Seting_DOS.Apps
 					Console.Write("Remove password");
 					Console.SetCursorPosition(3, 12);
 					Console.Write("Change password");
-					Console.SetCursorPosition(3, 8);
+					Console.SetCursorPosition(3, 14);
+					Console.Write("Rerun Post-Install script");
+					Console.SetCursorPosition(3, 16);
+					Console.Write("Theme:");
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 8);
 					Console.Write("Change username:");
 				}
 				else if (selection == 1)
@@ -401,20 +454,58 @@ namespace Seting_DOS.Apps
 					Console.Write("Change username:");
 					Console.SetCursorPosition(3, 12);
 					Console.Write("Change password");
-					Console.SetCursorPosition(3, 10);
+					Console.SetCursorPosition(3, 14);
+					Console.Write("Rerun Post-Install script");
+					Console.SetCursorPosition(3, 16);
+					Console.Write("Theme:");
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 10);
 					Console.Write("Remove password");
 				}
-				else
+				else if (selection == 2)
 				{
 					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
 					Console.SetCursorPosition(3, 8);
 					Console.Write("Change username:");
 					Console.SetCursorPosition(3, 10);
 					Console.Write("Remove password");
-					Console.SetCursorPosition(3, 12);
+					Console.SetCursorPosition(3, 14);
+					Console.Write("Rerun Post-Install script");
+					Console.SetCursorPosition(3, 16);
+					Console.Write("Theme:");
 					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 12);
 					Console.Write("Change password");
+				}
+				else if (selection == 3)
+				{
+					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 8);
+					Console.Write("Change username:");
+					Console.SetCursorPosition(3, 12);
+					Console.Write("Change password");
+					Console.SetCursorPosition(3, 10);
+					Console.Write("Remove password");
+					Console.SetCursorPosition(3, 16);
+					Console.Write("Theme:");
+					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 14);
+					Console.Write("Rerun Post-Install script");
+				}
+				else if (selection == 4)
+				{
+					TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 8);
+					Console.Write("Change username:");
+					Console.SetCursorPosition(3, 12);
+					Console.Write("Change password");
+					Console.SetCursorPosition(3, 10);
+					Console.Write("Remove password");
+					Console.SetCursorPosition(3, 14);
+					Console.Write("Rerun Post-Install script");
+					Console.ForegroundColor = ConsoleColor.Black; Console.BackgroundColor = ConsoleColor.White;
+					Console.SetCursorPosition(3, 16);
+					Console.Write("Theme:");
 				}
 				key = Console.ReadKey(true);
 				TUIBGCol.Set(); Console.ForegroundColor = ConsoleColor.White;
@@ -429,6 +520,12 @@ namespace Seting_DOS.Apps
 							selection = 2;
 							break;
 						case 2:
+							selection = 3;
+							break;
+						case 3:
+							selection = 4;
+							break;
+						case 4:
 							selection = 0;
 							break;
 					}
@@ -438,13 +535,19 @@ namespace Seting_DOS.Apps
 					switch (selection)
 					{
 						case 0:
-							selection = 2;
+							selection = 4;
 							break;
 						case 1:
 							selection = 0;
 							break;
 						case 2:
 							selection = 1;
+							break;
+						case 3:
+							selection = 2;
+							break;
+						case 4:
+							selection = 3;
 							break;
 					}
 				}
@@ -490,13 +593,18 @@ namespace Seting_DOS.Apps
 					{
 						//Change password
 						Console.SetCursorPosition(3, 14);
+						Console.Write("                          ");
+						Console.SetCursorPosition(3, 14);
 						Console.Write("Repeat password: ");
 						Console.SetCursorPosition(3, 16);
+						Console.Write("                                    ");
+						Console.SetCursorPosition(3, 16);
 						Console.Write("Password reminder: ");
+						Console.SetCursorPosition(3, 17);
+						Console.Write("                                                  ");
 						Console.SetCursorPosition(3, 12);
 						Console.Write("Change password: ");
 						string password = Keyboard.KeyHandler(true, true);
-						string reminder = null;
 						if (password == "" || password == null) { }
 						else
 						{
@@ -512,7 +620,7 @@ namespace Seting_DOS.Apps
 							else
 							{
 								Console.SetCursorPosition(22, 16);
-								reminder = Console.ReadLine();
+								string reminder = Console.ReadLine();
 								try
 								{
 									File.Delete(@"0:\users\" + EnvVars.username + @"\password.pwd");
@@ -529,6 +637,25 @@ namespace Seting_DOS.Apps
 								EnvVars.hasPassword = true;
 							}
 						}
+					}
+					else if (selection == 3)
+					{
+						PostInstall.Start();
+					}
+					else if (selection == 4)
+					{
+						if (EnvVars.theme == "black")
+						{
+							EnvVars.theme = "classic";
+						}
+						else
+						{
+							EnvVars.theme = "black";
+						}
+						File.Delete(EnvVars.userfolder + "theme.dat");
+						StreamWriter theme = new StreamWriter(EnvVars.userfolder + "theme.dat");
+						theme.Write(EnvVars.theme);
+						theme.Close();
 					}
 				}
 				else if (key.Modifiers == ConsoleModifiers.Control && key.Key == ConsoleKey.X)
