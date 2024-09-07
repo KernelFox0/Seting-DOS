@@ -3,6 +3,8 @@ Seting-DOS, a useless operating system made with the COSMOS kernel
 
 Currently in beta.
 
+[Filesystem.vmdk](https://drive.google.com/file/d/1E8BegVBBsPyGAAWNXozoZ9Kb2w6Wzfwx/view?usp=sharing) (use this to install the OS in a VM)
+
 Information
 ---
 UI type: Textmode, like DOS   
