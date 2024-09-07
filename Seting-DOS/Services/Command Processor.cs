@@ -420,7 +420,27 @@ namespace Seting_DOS.Services
 			{
 				foreach (string word in inputs) { Console.Write(word + " "); }
 				Console.Write("\n");
-				Console.WriteLine(buffer);
+			}
+			else if (cmd == "auth")
+			{
+				try
+				{
+					if (UPC.CallUPC(UPC.root, "System shell", "Test UPC"))
+					{
+						Console.Clear();
+						Messages.Success("Authentication test successful, authenticated!");
+					}
+					else
+					{
+						Console.Clear();
+						Messages.Success("Authentication test successful, authentication refused!");
+					}
+				}
+				catch (Exception e)
+				{
+					Console.Clear();
+					Messages.Error($"Authentication test failed successfully!\nMessage:{e.Message}");
+				}
 			}
 			#endregion
 			#region Applications

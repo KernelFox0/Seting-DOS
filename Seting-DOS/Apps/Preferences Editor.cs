@@ -27,8 +27,15 @@ namespace Seting_DOS.Apps
 {
 	public static class PreferencesEditor
 	{
+		private static bool authenticated = false;
 		public static void StartApp()
 		{
+			//Ask for authentication
+			if (!authenticated)
+			{
+				if (!UPC.CallUPC(UPC.root, "Preferences Editor", "Edit Preferences which the given user's Privilege level allows")) return;
+				else authenticated = true;
+			}
 			TUIBGCol.Set();
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.Clear();
@@ -106,6 +113,7 @@ namespace Seting_DOS.Apps
 				else if (key.Key == ConsoleKey.Enter) { break; }
 				else if (key.Modifiers == ConsoleModifiers.Control && key.Key == ConsoleKey.X)
 				{
+					authenticated = false;
 					return;
 				}
 			}
